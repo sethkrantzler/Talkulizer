@@ -10,3 +10,7 @@ TO DO
 - Make wave equation a callback for customizability
 - Option to Move lines upward infinitely
 - x Seperate line by frequency range
+- Menu to change params on the fly
+- Color palettes
+- Circle viz
+- fractal viz?

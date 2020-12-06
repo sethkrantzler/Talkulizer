@@ -73,7 +73,7 @@ function HorizontalLine(props: any) {
     const freqArray = freqData.subarray(freqRange.start, freqRange.end);
     const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
     for (let i = 0; i < points.length; i++) {
-      points[i].y = (freqAvg/255.0)*Math.exp(-Math.abs(points[i].x)*0.65)*Math.cos(2*Math.PI*points[i].x + Date.now() / 400);
+      points[i].y = (Math.pow(2, freqAvg/255.0) - 1)*Math.exp(-Math.abs(points[i].x)*0.65)*Math.cos(2*Math.PI*points[i].x + Date.now() / 400);
     }
     return points;
   }
@@ -117,6 +117,7 @@ export default class App extends React.Component<any, any> {
     const source = audioContext.createMediaStreamSource(this.state.source);
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.5;
     source.connect(analyser);
     this.setState({
       analyzer: analyser
