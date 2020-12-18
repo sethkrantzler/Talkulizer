@@ -1,6 +1,13 @@
-* {
+.App {
+  height: 100vh !important;
+}
+
+#root{
   background-color: #040d1b;
-  height: 100%;
+}
+
+#visualizerType{
+  color: white;
 }
 
 .App-logo {
