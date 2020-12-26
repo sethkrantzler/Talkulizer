@@ -2,11 +2,23 @@
   height: 100vh !important;
 }
 
+html{
+  overflow: hidden;
+}
+
 #root{
   background-color: #040d1b;
 }
 
 #visualizerType{
+  color: white;
+}
+
+#spread{
+  color: white;
+}
+
+#offset{
   color: white;
 }
 
