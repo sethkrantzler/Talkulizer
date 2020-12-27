@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, useResource, useThree } from 'react-three-fiber';
-import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeometry, Geometry, LineBasicMaterial, Mesh, Points, Scene, Vector2, DoubleSide} from 'three';
+import { Canvas, useFrame, useResource, useThree, useUpdate } from 'react-three-fiber';
+import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeometry, Geometry, LineBasicMaterial, Mesh, Points, Scene, Vector2, DoubleSide, CubicBezierCurve3, Vector3, QuadraticBezierCurve3} from 'three';
 import './App.css';
 import { Input, MenuItem, Select, TextField } from '@material-ui/core';
 
@@ -195,6 +195,76 @@ function Plane(props: any) {
   );
 }
 
+function Cube(props: any) {
+  const geoRef = useRef<any>(null);
+  const lineRef = useRef<any>(null);
+  const freqRanges: FrequencyRange[] = [
+    {start: 0, end: 2, color: '#CFFFB3'},
+    {start: 4, end:  10, color: '#337CA0'},
+    {start: 13, end:  22, color: '#46237A'},
+    {start: 40, end:  88, color: '#FFB400'},
+    {start: 100, end:  256, color: '#EE5622'},
+    {start: 500, end:  852, color: '#3A5311'}
+  ];
+
+  let bufferLength = 0;
+  let amplitudeArray = new Uint8Array(0);
+
+  // Initialize vertices
+  const linePoints: Vector2[] = [];
+  const lineSegments = 500.0;
+  const size = 3.0;
+
+  for (let i = 0; i < lineSegments; i++) {
+    linePoints.push(new Vector2(0, size + (-2*size*i/lineSegments)));
+  }
+
+  useEffect(()=> {
+    if (!!props.analyzer && bufferLength == 0) {
+      bufferLength = props.analyzer.frequencyBinCount;
+      amplitudeArray = new Uint8Array(bufferLength);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+    }
+  });
+
+  function average(nums: Uint8Array) {
+    return nums.reduce((a, b) => (a + b)) / nums.length;
+  }
+
+  function getColor(){
+    let loudestAmp = 0;
+    let loudestBand = 0;
+    freqRanges.map((range, index) => {
+      const averageAmp = average(amplitudeArray.subarray(range.start, range.end));
+      if (averageAmp > loudestAmp) {
+        loudestBand = index;
+        loudestAmp = averageAmp;
+      }
+    });
+    return freqRanges[loudestBand].color;
+  }
+
+
+  useFrame(() => {
+    if (lineRef && lineRef.current && !!props.analyzer && amplitudeArray) {
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+      lineRef.current.material.color.set(getColor());
+      lineRef.current.rotation.set(lineRef.current.rotation.x + 0.005, lineRef.current.rotation.y + 0.005, lineRef.current.rotation.z)
+    }
+  });
+  
+
+  return (
+    <mesh
+      ref={lineRef}
+      {...props}
+      scale={[1, 1, 1]}>
+      <boxBufferGeometry ref={geoRef} args={[3,3, 3]} attach="geometry" />
+      <meshBasicMaterial color={'purple'} side={DoubleSide} attach="material"/>
+    </mesh>
+  );
+}
+
 function Ring(props: any) {
   const geoRef = useRef<any>(null);
   const lineRef = useRef<any>(null);
@@ -323,13 +393,65 @@ function Circle(props: any) {
   );
 }
 
+function Wire(props: any) {
+  const lineRef = useRef<any>(null);
+
+  let bufferLength = 0;
+  let amplitudeArray = new Uint8Array(0);
+
+  // Initialize vertices
+  const curve = new QuadraticBezierCurve3(
+    new Vector3( 0, 1, 0 ),
+    new Vector3( 0, 0.25, 0.2 ),
+    new Vector3( 0, 0, 1 )
+  );
+
+  const points = curve.getPoints(1024);
+
+  useEffect(()=> {
+    if (!!props.analyzer && bufferLength == 0) {
+      bufferLength = props.analyzer.frequencyBinCount;
+      amplitudeArray = new Uint8Array(bufferLength);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+    }
+  });
+
+  function average(nums: Uint8Array) {
+    return nums.reduce((a, b) => (a + b)) / nums.length;
+  }
+
+
+  useFrame(() => {
+    if (lineRef && lineRef.current) {
+      //lineRef.current.rotation.set(lineRef.current.rotation.x, (lineRef.current.rotation.y + 0.05) % (2*Math.PI), lineRef.current.rotation.z);
+      //console.log(lineRef.current.rotation);
+    }
+  });
+
+  const geoRef = useUpdate((geometry: BufferGeometry) => {
+    geometry.setFromPoints(points)
+  }, [])
+
+
+  return (
+    <line
+      ref={lineRef}
+      {...props}
+      scale={[1, 1, 1]}
+      rotation={[0, 30*Math.PI/180, 0]}>
+      <bufferGeometry ref={geoRef} attach="geometry" />
+      <meshBasicMaterial color={props.color} />
+    </line>
+  );
+}
+
 export default class App extends React.Component<any, any> {
 
   constructor(props: any) {
     super(props);
     this.state = {
       analyzer: null, 
-      visualizerType: "circular",
+      visualizerType: "wires",
       spread: 1,
       offset: 1.3
     };
@@ -383,6 +505,14 @@ export default class App extends React.Component<any, any> {
     )
   }
 
+  cube() {
+    return (
+      <>
+        <Cube analyzer={this.state.analyzer} position={[0,0,0]} />
+      </>
+    )
+  }
+
   circular(bolt: boolean) {
     const numCircles = 6;
     const maxRadius = 10;
@@ -430,6 +560,24 @@ export default class App extends React.Component<any, any> {
     )
   }
 
+  wires(spread: number) {
+    return (
+      <>
+        <Wire analyzer={this.state.analyzer} position = {[0,0,0]} color={'#8D5BFF'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread,0,0]} color={'#6D5BFF'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*2,0,0]} color={'#5B8FFF'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*3,0,0]} color={'#5BFFE7'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*4,0,0]} color={'#5BFF76'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*5,0,0]} color={'#CAFF5B'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*6,0,0]} color={'#FFE05B'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*7,0,0]} color={'#FFA75B'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*8,0,0]} color={'#FF6B5B'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*9,0,0]} color={'#FF5B89'} />
+        <Wire analyzer={this.state.analyzer} position = {[0 + spread*10,0,0]} color={'#FF2E37'} />
+      </>
+    )
+  }
+
   renderVisualizer(visualizerType: string, spread: number, offset: number){
     switch(visualizerType) { 
       case "horizontalLines": { 
@@ -449,6 +597,12 @@ export default class App extends React.Component<any, any> {
       } 
       case "solid": { 
         return this.solidColor();
+      }
+      case "cube": { 
+        return this.cube();
+      }
+      case "wires": { 
+        return this.wires(spread);
       } 
       default: {
         return this.circular(true);
@@ -476,7 +630,9 @@ export default class App extends React.Component<any, any> {
       { value: 'circular', label: 'Circles' },
       { value: 'bolt', label: 'Lightning' },
       { value: 'rings', label: 'Rings' },
-      { value: 'solid', label: 'Solid' }
+      { value: 'solid', label: 'Solid' },
+      { value: 'cube', label: 'Cube' },
+      { value: 'wires', label: "Wires"}
     ];
 
     return (
