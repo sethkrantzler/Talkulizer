@@ -366,7 +366,6 @@ function Circle(props: any) {
     return points;
   }
 
-
   useFrame(() => {
     if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray && props.bolt) {
       props.analyzer.getByteFrequencyData(amplitudeArray);
@@ -420,11 +419,22 @@ function Wire(props: any) {
     return nums.reduce((a, b) => (a + b)) / nums.length;
   }
 
+  function graphFrequencyData(points: Vector3[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
+    const freqArray = freqData.subarray(freqRange.start, freqRange.end);
+    const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
+    for (let i = 0; i < points.length; i++) {
+      if (props.flat) {
+        points[i].y = (freqAvg/(255.0*10))*Math.exp(-Math.abs(points[i].z)*0.65)*Math.cos(2*Math.PI*points[i].z);
+      }
+      points[i].x = (freqAvg/(255.0*10))*Math.exp(-Math.abs(points[i].z)*0.65)*Math.cos(2*Math.PI*points[i].z);
+    }
+    return points;
+  }
 
   useFrame(() => {
-    if (lineRef && lineRef.current) {
-      //lineRef.current.rotation.set(lineRef.current.rotation.x, (lineRef.current.rotation.y + 0.05) % (2*Math.PI), lineRef.current.rotation.z);
-      //console.log(lineRef.current.rotation);
+    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray) {
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+      geoRef.current.setFromPoints(graphFrequencyData(points, amplitudeArray, props.freqRange));
     }
   });
 
@@ -563,17 +573,17 @@ export default class App extends React.Component<any, any> {
   wires(spread: number) {
     return (
       <>
-        <Wire analyzer={this.state.analyzer} position = {[0,0,0]} color={'#8D5BFF'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread,0,0]} color={'#6D5BFF'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*2,0,0]} color={'#5B8FFF'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*3,0,0]} color={'#5BFFE7'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*4,0,0]} color={'#5BFF76'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*5,0,0]} color={'#CAFF5B'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*6,0,0]} color={'#FFE05B'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*7,0,0]} color={'#FFA75B'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*8,0,0]} color={'#FF6B5B'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*9,0,0]} color={'#FF5B89'} />
-        <Wire analyzer={this.state.analyzer} position = {[0 + spread*10,0,0]} color={'#FF2E37'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 0, end:  2}} position = {[0,0,0]} color={'#8D5BFF'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 4, end:  10}} position = {[0 + spread,0,0]} color={'#6D5BFF'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 12, end:  16}} position = {[0 + spread*2,0,0]} color={'#5B8FFF'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 18, end:  22}} position = {[0 + spread*3,0,0]} color={'#5BFFE7'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 40, end:  60}} position = {[0 + spread*4,0,0]} color={'#5BFF76'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 62, end:  80}} position = {[0 + spread*5,0,0]} color={'#CAFF5B'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 82, end:  100}} position = {[0 + spread*6,0,0]} color={'#FFE05B'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 100, end:  140}} position = {[0 + spread*7,0,0]} color={'#FFA75B'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 146, end:  190}} position = {[0 + spread*8,0,0]} color={'#FF6B5B'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 264, end:  542}} position = {[0 + spread*9,0,0]} color={'#FF5B89'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 550, end:  852}} position = {[0 + spread*10,0,0]} color={'#FF2E37'} />
       </>
     )
   }
