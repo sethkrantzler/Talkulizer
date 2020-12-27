@@ -570,20 +570,20 @@ export default class App extends React.Component<any, any> {
     )
   }
 
-  wires(spread: number) {
+  wires(spread: number, flat: boolean) {
     return (
       <>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 0, end:  2}} position = {[0,0,0]} color={'#8D5BFF'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 4, end:  10}} position = {[0 + spread,0,0]} color={'#6D5BFF'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 12, end:  16}} position = {[0 + spread*2,0,0]} color={'#5B8FFF'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 18, end:  22}} position = {[0 + spread*3,0,0]} color={'#5BFFE7'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 40, end:  60}} position = {[0 + spread*4,0,0]} color={'#5BFF76'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 62, end:  80}} position = {[0 + spread*5,0,0]} color={'#CAFF5B'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 82, end:  100}} position = {[0 + spread*6,0,0]} color={'#FFE05B'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 100, end:  140}} position = {[0 + spread*7,0,0]} color={'#FFA75B'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 146, end:  190}} position = {[0 + spread*8,0,0]} color={'#FF6B5B'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 264, end:  542}} position = {[0 + spread*9,0,0]} color={'#FF5B89'} />
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 550, end:  852}} position = {[0 + spread*10,0,0]} color={'#FF2E37'} />
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 0, end:  2}} position = {[0,0,0]} color={'#8D5BFF'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 4, end:  10}} position = {[0 + spread,0,0]} color={'#6D5BFF'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 12, end:  16}} position = {[0 + spread*2,0,0]} color={'#5B8FFF'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 18, end:  22}} position = {[0 + spread*3,0,0]} color={'#5BFFE7'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 40, end:  60}} position = {[0 + spread*4,0,0]} color={'#5BFF76'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 62, end:  80}} position = {[0 + spread*5,0,0]} color={'#CAFF5B'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 82, end:  100}} position = {[0 + spread*6,0,0]} color={'#FFE05B'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 100, end:  140}} position = {[0 + spread*7,0,0]} color={'#FFA75B'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 146, end:  190}} position = {[0 + spread*8,0,0]} color={'#FF6B5B'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 264, end:  542}} position = {[0 + spread*9,0,0]} color={'#FF5B89'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} freqRange={{start: 550, end:  852}} position = {[0 + spread*10,0,0]} color={'#FF2E37'} flat={flat}/>
       </>
     )
   }
@@ -612,8 +612,11 @@ export default class App extends React.Component<any, any> {
         return this.cube();
       }
       case "wires": { 
-        return this.wires(spread);
-      } 
+        return this.wires(spread, false);
+      }
+      case "flat": { 
+        return this.wires(spread, true);
+      }
       default: {
         return this.circular(true);
       } 
@@ -642,7 +645,8 @@ export default class App extends React.Component<any, any> {
       { value: 'rings', label: 'Rings' },
       { value: 'solid', label: 'Solid' },
       { value: 'cube', label: 'Cube' },
-      { value: 'wires', label: "Wires"}
+      { value: 'wires', label: "Wires"},
+      { value: 'flat', label: "Flat"}
     ];
 
     return (
