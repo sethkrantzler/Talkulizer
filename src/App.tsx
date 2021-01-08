@@ -293,23 +293,27 @@ function Ring(props: any) {
     return nums.reduce((a, b) => (a + b)) / nums.length;
   }
 
-  function graphFrequencyData(points: Vector2[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
+  function ringFuzz(points: Vector3[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
     const freqArray = freqData.subarray(freqRange.start, freqRange.end);
     const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
+    const offset = (freqAvg / (255.0))*0.1;
+    const n = 10;
+    const ringWidth = 2;
+    const stepSize = 2*Math.PI / points.length;
     for (let i = 0; i < points.length; i++) {
-      points[i].y = (Math.pow(2, freqAvg/255.0) - 1)*Math.exp(-Math.abs(points[i].x)*0.65)*Math.cos(2*Math.PI*points[i].x + Date.now() / 400);
+      const t = i+1 * stepSize; // i *stepsize
+      points[i].x = (ringWidth+offset*Math.cos(n*t))*Math.cos(t); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
+      points[i].y = (ringWidth+offset*Math.cos(n*t))*Math.sin(t);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
     }
     return points;
   }
 
-
   useFrame(() => {
-    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray && props.bolt) {
-      props.analyzer.getByteFrequencyData(amplitudeArray);
-      geoRef.current.setFromPoints(graphFrequencyData(linePoints, amplitudeArray, props.freqRange));
-    }
-    else if (lineRef && lineRef.current) {
+     if (lineRef && lineRef.current && geoRef && geoRef.current && !!props.analyzer && amplitudeArray) {
       lineRef.current.scale.set(lineRef.current.scale.x + props.scaleRate, lineRef.current.scale.y + props.scaleRate, lineRef.current.scale.z);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+      geoRef.current.vertices = ringFuzz(geoRef.current.vertices, amplitudeArray, props.freqRange);
+      geoRef.current.verticesNeedUpdate = true;
       if (lineRef.current.scale.x > 10) {
         lineRef.current.scale.set(0.01, 0.01, 1);
         lineRef.current.position.set(lineRef.current.position.x, lineRef.current.position.y, lineRef.current.position.z + 0.0001)
@@ -323,7 +327,63 @@ function Ring(props: any) {
       ref={lineRef}
       {...props}
       scale={[props.radius, props.radius, 1]}>
-      <ringBufferGeometry ref={geoRef} args={[1-(props.ringSize/2.0), 1+(props.ringSize/2.0), 1024]} attach="geometry" />
+      <ringGeometry ref={geoRef} args={[1-(props.ringSize/2.0), 1+(props.ringSize/2.0), 1100]} attach="geometry" />
+      <meshBasicMaterial color={props.color} />
+    </mesh>
+  );
+}
+
+function Bolt(props: any) {
+  const geoRef = useRef<any>(null);
+  const lineRef = useRef<any>(null);
+
+  let bufferLength = 0;
+  let amplitudeArray = new Uint8Array(0);
+
+  // Initialize vertices
+  const linePoints: Vector2[] = [];
+  const lineSegments = 500.0;
+  const size = 5.0;
+
+  for (let i = 0; i < lineSegments; i++) {
+    linePoints.push(new Vector2(size + (-2*size*i/lineSegments), Math.random()));
+  }
+
+  useEffect(()=> {
+    if (!!props.analyzer && bufferLength == 0) {
+      bufferLength = props.analyzer.frequencyBinCount;
+      amplitudeArray = new Uint8Array(bufferLength);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+    }
+  });
+
+  function average(nums: Uint8Array) {
+    return nums.reduce((a, b) => (a + b)) / nums.length;
+  }
+
+  function graphFrequencyData(points: Vector2[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
+    const freqArray = freqData.subarray(freqRange.start, freqRange.end);
+    const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
+    for (let i = 0; i < points.length; i++) {
+      points[i].y = (Math.pow(2, freqAvg/255.0) - 1)*Math.exp(-Math.abs(points[i].x)*0.65)*Math.cos(2*Math.PI*points[i].x + Date.now() / 400);
+    }
+    return points;
+  }
+
+  useFrame(() => {
+    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray) {
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+      geoRef.current.setFromPoints(graphFrequencyData(linePoints, amplitudeArray, props.freqRange));
+    }
+  });
+  
+
+  return (
+    <mesh
+      ref={lineRef}
+      {...props}
+      scale={[ 1, 1, 1]}>
+      <circleBufferGeometry ref={geoRef} args={[1, 1024]} attach="geometry" />
       <meshBasicMaterial color={props.color} />
     </mesh>
   );
@@ -366,16 +426,36 @@ function Circle(props: any) {
     return points;
   }
 
-  useFrame(() => {
-    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray && props.bolt) {
-      props.analyzer.getByteFrequencyData(amplitudeArray);
-      geoRef.current.setFromPoints(graphFrequencyData(linePoints, amplitudeArray, props.freqRange));
+  function circleFuzz(points: Vector3[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
+    const freqArray = freqData.subarray(freqRange.start, freqRange.end);
+    const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
+    const offset = (freqAvg / (255.0))*0.1;
+    const n = 10;
+    const ringWidth = 0.2;
+    const stepSize = 2*Math.PI / points.length;
+    for (let i = 0; i < points.length; i++) {
+      const t = i+1 * stepSize; // i *stepsize
+      points[i].x = (ringWidth+offset*Math.cos(n*t))*Math.cos(t + Date.now() * 0.0001); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
+      points[i].y = (ringWidth+offset*Math.cos(n*t))*Math.sin(t + Date.now() * 0.0001);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
     }
-    else if (lineRef && lineRef.current) {
-      lineRef.current.scale.set(lineRef.current.scale.x + props.scaleRate, lineRef.current.scale.y + props.scaleRate, lineRef.current.scale.z);
-      if (lineRef.current.scale.x > 10) {
-        lineRef.current.scale.set(0.01, 0.01, 1);
-        lineRef.current.position.set(lineRef.current.position.x, lineRef.current.position.y, lineRef.current.position.z + 0.0001)
+    return points;
+  }
+
+  useFrame(() => {
+    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray) {
+      if (props.bolt) {
+        props.analyzer.getByteFrequencyData(amplitudeArray);
+        geoRef.current.setFromPoints(graphFrequencyData(linePoints, amplitudeArray, props.freqRange));
+      }
+      else {
+        lineRef.current.scale.set(lineRef.current.scale.x + props.scaleRate, lineRef.current.scale.y + props.scaleRate, lineRef.current.scale.z);
+        props.analyzer.getByteFrequencyData(amplitudeArray);
+        geoRef.current.vertices = circleFuzz(geoRef.current.vertices, amplitudeArray, props.freqRange);
+        geoRef.current.verticesNeedUpdate = true;
+        if (lineRef.current.scale.x > 10) {
+          lineRef.current.scale.set(0.01, 0.01, 1);
+          lineRef.current.position.set(lineRef.current.position.x, lineRef.current.position.y, lineRef.current.position.z + 0.0001)
+        }
       }
     }
   });
@@ -386,7 +466,7 @@ function Circle(props: any) {
       ref={lineRef}
       {...props}
       scale={[props.bolt ? 1 : props.radius, props.bolt ? 1 : props.radius, 1]}>
-      <circleBufferGeometry ref={geoRef} args={[1, 1024]} attach="geometry" />
+      <circleGeometry ref={geoRef} args={[1, 500]} attach="geometry" />
       <meshBasicMaterial color={props.color} />
     </mesh>
   );
@@ -422,11 +502,19 @@ function Wire(props: any) {
   function graphFrequencyData(points: Vector3[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
     const freqArray = freqData.subarray(freqRange.start, freqRange.end);
     const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
-    for (let i = 0; i < points.length; i++) {
-      if (props.flat) {
+    if (props.flat) {
+      for (let i = 0; i < points.length; i++) {
         points[i].y = (freqAvg/(255.0*10))*Math.exp(-Math.abs(points[i].z)*0.65)*Math.cos(2*Math.PI*points[i].z);
       }
-      points[i].x = (freqAvg/(255.0*10))*Math.exp(-Math.abs(points[i].z)*0.65)*Math.cos(2*Math.PI*points[i].z);
+    }
+    else if (props.fuzz){
+      for (let i = 0; i < points.length; i++) {
+        points[i].x = Math.random()*(freqAvg/(255.0));
+      }
+    } else {
+      for (let i = 0; i < points.length; i++) {
+        points[i].x = (freqAvg/(255.0*10))*Math.exp(-Math.abs(points[i].z)*0.65)*Math.cos(2*Math.PI*points[i].z); 
+      }
     }
     return points;
   }
@@ -461,7 +549,7 @@ export default class App extends React.Component<any, any> {
     super(props);
     this.state = {
       analyzer: null, 
-      visualizerType: "wires",
+      visualizerType: "circular",
       spread: 1,
       offset: 1.3
     };
@@ -523,19 +611,36 @@ export default class App extends React.Component<any, any> {
     )
   }
 
-  circular(bolt: boolean) {
+  bolt() {
     const numCircles = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numCircles;
     const scaleRate=0.01;
     return (
       <>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={'#46237A'} freqRange={{start: 0, end:  2}} bolt={bolt}/>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={'#FFB400'} freqRange={{start: 4,  end:  10}} bolt={bolt}/>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} bolt={bolt}/>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={'#337CA0'} freqRange={{start: 40, end:  88}} bolt={bolt}/>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={'#EE5622'} freqRange={{start: 100, end:  256}} bolt={bolt}/>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={'#3A5311'} freqRange={{start: 500, end:  852}} bolt={bolt}/>
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={'#46237A'} freqRange={{start: 0, end:  2}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
+      </>
+    )
+  }
+
+  circular() {
+    const numCircles = 6;
+    const maxRadius = 10;
+    const radiusScale=maxRadius/numCircles;
+    const scaleRate=0.01;
+    return (
+      <>
+        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={'#46237A'} freqRange={{start: 0, end:  2}} />
+        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
+        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
+        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
+        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
+        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
       </>
     )
   }
@@ -597,10 +702,10 @@ export default class App extends React.Component<any, any> {
         return this.verticalLines(spread, offset);
       }
       case "circular": { 
-        return this.circular(false);
+        return this.circular();
       }
       case "bolt": { 
-        return this.circular(true);
+        return this.bolt();
       } 
       case "rings": { 
         return this.rings(0.02);
@@ -618,7 +723,7 @@ export default class App extends React.Component<any, any> {
         return this.wires(spread, true);
       }
       default: {
-        return this.circular(true);
+        return this.circular();
       } 
    } 
   }
