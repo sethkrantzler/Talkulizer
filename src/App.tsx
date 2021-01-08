@@ -296,12 +296,12 @@ function Ring(props: any) {
   function ringFuzz(points: Vector3[], freqData: Uint8Array, freqRange: FrequencyRange, waveFunc?: string ) {
     const freqArray = freqData.subarray(freqRange.start, freqRange.end);
     const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
-    const offset = (freqAvg / (255.0))*0.1;
+    const offset = (freqAvg / (255.0));
     const n = 10;
-    const ringWidth = 2;
+    const ringWidth = 0.2;
     const stepSize = 2*Math.PI / points.length;
     for (let i = 0; i < points.length; i++) {
-      const t = i+1 * stepSize; // i *stepsize
+      const t = !props.indexStart ? i*stepSize : i+1*stepSize; // i *stepsize
       points[i].x = (ringWidth+offset*Math.cos(n*t))*Math.cos(t); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
       points[i].y = (ringWidth+offset*Math.cos(n*t))*Math.sin(t);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
     }
@@ -327,7 +327,7 @@ function Ring(props: any) {
       ref={lineRef}
       {...props}
       scale={[props.radius, props.radius, 1]}>
-      <ringGeometry ref={geoRef} args={[1-(props.ringSize/2.0), 1+(props.ringSize/2.0), 1100]} attach="geometry" />
+      <ringGeometry ref={geoRef} args={[1-(props.ringSize/2.0), 1+(props.ringSize/2.0), 1024]} attach="geometry" />
       <meshBasicMaterial color={props.color} />
     </mesh>
   );
@@ -645,19 +645,19 @@ export default class App extends React.Component<any, any> {
     )
   }
 
-  rings(ringSize: number) {
+  rings(ringSize: number, indexStart: number) {
     const numRings = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numRings;
     const scaleRate=0.01;
     return (
       <>
-        <Ring analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} ringSize={ringSize} color={'#46237A'} freqRange={{start: 0, end:  2}} />
-        <Ring analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} ringSize={ringSize} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
-        <Ring analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
-        <Ring analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
-        <Ring analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
-        <Ring analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
+        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} ringSize={ringSize} color={'#46237A'} freqRange={{start: 0, end:  2}} />
+        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} ringSize={ringSize} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
+        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
+        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
+        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
+        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
       </>
     )
   }
@@ -708,7 +708,10 @@ export default class App extends React.Component<any, any> {
         return this.bolt();
       } 
       case "rings": { 
-        return this.rings(0.02);
+        return this.rings(0.02, 1);
+      } 
+      case "fractal": { 
+        return this.rings(0.02, 0);
       } 
       case "solid": { 
         return this.solidColor();
@@ -751,7 +754,8 @@ export default class App extends React.Component<any, any> {
       { value: 'solid', label: 'Solid' },
       { value: 'cube', label: 'Cube' },
       { value: 'wires', label: "Wires"},
-      { value: 'flat', label: "Flat"}
+      { value: 'flat', label: "Flat"},
+      { value: 'fractal', label: 'Fractal' },
     ];
 
     return (
