@@ -3,12 +3,23 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useResource, useThree, useUpdate } from 'react-three-fiber';
 import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeometry, Geometry, LineBasicMaterial, Mesh, Points, Scene, Vector2, DoubleSide, CubicBezierCurve3, Vector3, QuadraticBezierCurve3} from 'three';
 import './App.css';
-import { Input, MenuItem, Select, TextField } from '@material-ui/core';
+import { Input, MenuItem, Select, TextField, Slider, Button } from '@material-ui/core';
+import { ColorPalettes } from './ColorPalette';
 
 interface FrequencyRange {
   start: number;
   end: number;
   color?: string;
+}
+
+interface Preset {
+  presetName: string;
+  visualizerType: string,
+  colorIndex: number,
+  spread: number,
+  offset: number,
+  param1: number,
+  param2: number
 }
 
 function HorizontalLine(props: any) {
@@ -297,13 +308,12 @@ function Ring(props: any) {
     const freqArray = freqData.subarray(freqRange.start, freqRange.end);
     const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
     const offset = (freqAvg / (255.0));
-    const n = 10;
-    const ringWidth = 0.2;
+    const n = props.n > 2 ? props.n : 2;
     const stepSize = 2*Math.PI / points.length;
     for (let i = 0; i < points.length; i++) {
-      const t = !props.indexStart ? i*stepSize : i+1*stepSize; // i *stepsize
-      points[i].x = (ringWidth+offset*Math.cos(n*t))*Math.cos(t); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
-      points[i].y = (ringWidth+offset*Math.cos(n*t))*Math.sin(t);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
+      const t = !props.indexStart ? i*stepSize : i+1.0*stepSize; // i *stepsize
+      points[i].x = (props.ringWidth+offset*Math.cos(n*t))*Math.cos(t + Date.now() * 0.001); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
+      points[i].y = (props.ringWidth+offset*Math.cos(n*t))*Math.sin(t + Date.now() * 0.001);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
     }
     return points;
   }
@@ -430,13 +440,11 @@ function Circle(props: any) {
     const freqArray = freqData.subarray(freqRange.start, freqRange.end);
     const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
     const offset = (freqAvg / (255.0))*0.1;
-    const n = 10;
-    const ringWidth = 0.2;
     const stepSize = 2*Math.PI / points.length;
     for (let i = 0; i < points.length; i++) {
       const t = i+1 * stepSize; // i *stepsize
-      points[i].x = (ringWidth+offset*Math.cos(n*t))*Math.cos(t + Date.now() * 0.0001); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
-      points[i].y = (ringWidth+offset*Math.cos(n*t))*Math.sin(t + Date.now() * 0.0001);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
+      points[i].x = (props.ringWidth+offset*Math.cos(props.n*t))*Math.cos(t + Date.now() * 0.0001); // Math.random() > 0.5 ? points[i].x + offset : points[i].x - offset;
+      points[i].y = (props.ringWidth+offset*Math.cos(props.n*t))*Math.sin(t + Date.now() * 0.0001);// Math.random() > 0.5 ? points[i].y + offset : points[i].y - offset;
     }
     return points;
   }
@@ -544,14 +552,17 @@ function Wire(props: any) {
 }
 
 export default class App extends React.Component<any, any> {
-
   constructor(props: any) {
     super(props);
     this.state = {
       analyzer: null, 
       visualizerType: "circular",
       spread: 1,
-      offset: 1.3
+      offset: 1.3,
+      param1: 10,
+      param2: 0.2,
+      colorIndex: 0,
+      presetName: ""
     };
   }
 
@@ -585,12 +596,12 @@ export default class App extends React.Component<any, any> {
   horizontalLines(offset: number, spread: number) {
     return (
       <>
-        <HorizontalLine analyzer={this.state.analyzer} position={[0, (spread*-2) - offset, -1]} color={'#46237A'} freqRange={{start: 0, end:  2}}/>
-        <HorizontalLine analyzer={this.state.analyzer} position={[0, (spread*-1) - offset, -1]} color={'#337CA0'} freqRange={{start: 4,  end:  10}}/>
-        <HorizontalLine analyzer={this.state.analyzer} position={[0, 0 - offset, -1]} color={'#CFFFB3'} freqRange={{start: 13, end:  22}}/>
-        <HorizontalLine analyzer={this.state.analyzer} position={[0, (spread*1) - offset, -1]} color={'#FFB400'} freqRange={{start: 40, end:  88}}/>
-        <HorizontalLine analyzer={this.state.analyzer} position={[0, (spread*2) - offset, -1]} color={'#EE5622'} freqRange={{start: 100, end:  256}}/>
-        <HorizontalLine analyzer={this.state.analyzer} position={[0, (spread*3) - offset, -1]} color={'white'} freqRange={{start: 500, end:  852}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[0]} position={[0, (spread*-2) - offset, -1]} freqRange={{start: 0, end:  2}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[1]} position={[0, (spread*-1) - offset, -1]} freqRange={{start: 4,  end:  10}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[2]} position={[0, 0 - offset, -1]}  freqRange={{start: 13, end:  22}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[3]} position={[0, (spread*1) - offset, -1]} freqRange={{start: 40, end:  88}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[4]} position={[0, (spread*2) - offset, -1]} freqRange={{start: 100, end:  256}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[5]} position={[0, (spread*3) - offset, -1]} freqRange={{start: 500, end:  852}}/>
       </>
     )
   }
@@ -618,46 +629,46 @@ export default class App extends React.Component<any, any> {
     const scaleRate=0.01;
     return (
       <>
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={'#46237A'} freqRange={{start: 0, end:  2}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
       </>
     )
   }
 
-  circular() {
+  circular(n: number, ringWidth: number) {
     const numCircles = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numCircles;
     const scaleRate=0.01;
     return (
       <>
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={'#46237A'} freqRange={{start: 0, end:  2}} />
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
-        <Circle analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
       </>
     )
   }
 
-  rings(ringSize: number, indexStart: number) {
+  rings(ringSize: number, indexStart: number, n: number, ringWidth: number) {
     const numRings = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numRings;
     const scaleRate=0.01;
     return (
       <>
-        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} ringSize={ringSize} color={'#46237A'} freqRange={{start: 0, end:  2}} />
-        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} ringSize={ringSize} color={'#FFB400'} freqRange={{start: 4,  end:  10}} />
-        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={'#CFFFB3'} freqRange={{start: 13, end:  22}} />
-        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={'#337CA0'} freqRange={{start: 40, end:  88}} />
-        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={'#EE5622'} freqRange={{start: 100, end:  256}} />
-        <Ring analyzer={this.state.analyzer} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={'#3A5311'} freqRange={{start: 500, end:  852}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
       </>
     )
   }
@@ -665,12 +676,12 @@ export default class App extends React.Component<any, any> {
   verticalLines(offset: number, spread: number) {
     return (
       <>
-        <VerticalLine analyzer={this.state.analyzer} position={[(spread*-2) - offset, 0, -1]} color={'#46237A'} freqRange={{start: 0, end:  2}}/>
-        <VerticalLine analyzer={this.state.analyzer} position={[(spread*-1) - offset, 0, -1]} color={'#337CA0'} freqRange={{start: 4,  end:  10}}/>
-        <VerticalLine analyzer={this.state.analyzer} position={[ 0 - offset, 0, -1]} color={'#CFFFB3'} freqRange={{start: 13, end:  22}}/>
-        <VerticalLine analyzer={this.state.analyzer} position={[(spread*1) - offset, 0, -1]} color={'#FFB400'} freqRange={{start: 40, end:  88}}/>
-        <VerticalLine analyzer={this.state.analyzer} position={[(spread*2) - offset, 0, -1]} color={'#EE5622'} freqRange={{start: 100, end:  256}}/>
-        <VerticalLine analyzer={this.state.analyzer} position={[(spread*3) - offset, 0, -1]} color={'white'} freqRange={{start: 500, end:  852}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[0]} position={[(spread*-2) - offset, 0, -1]} freqRange={{start: 0, end:  2}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[1]} position={[(spread*-1) - offset, 0, -1]} freqRange={{start: 4,  end:  10}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[2]} position={[ 0 - offset, 0, -1]}  freqRange={{start: 13, end:  22}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[3]} position={[(spread*1) - offset, 0, -1]} freqRange={{start: 40, end:  88}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[4]} position={[(spread*2) - offset, 0, -1]} freqRange={{start: 100, end:  256}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[5]} position={[(spread*3) - offset, 0, -1]} freqRange={{start: 500, end:  852}}/>
       </>
     )
   }
@@ -678,22 +689,22 @@ export default class App extends React.Component<any, any> {
   wires(spread: number, flat: boolean) {
     return (
       <>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 0, end:  2}} position = {[0,0,0]} color={'#8D5BFF'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 4, end:  10}} position = {[0 + spread,0,0]} color={'#6D5BFF'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 12, end:  16}} position = {[0 + spread*2,0,0]} color={'#5B8FFF'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 18, end:  22}} position = {[0 + spread*3,0,0]} color={'#5BFFE7'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 40, end:  60}} position = {[0 + spread*4,0,0]} color={'#5BFF76'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 62, end:  80}} position = {[0 + spread*5,0,0]} color={'#CAFF5B'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 82, end:  100}} position = {[0 + spread*6,0,0]} color={'#FFE05B'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 100, end:  140}} position = {[0 + spread*7,0,0]} color={'#FFA75B'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 146, end:  190}} position = {[0 + spread*8,0,0]} color={'#FF6B5B'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 264, end:  542}} position = {[0 + spread*9,0,0]} color={'#FF5B89'} flat={flat}/>
-        <Wire analyzer={this.state.analyzer} freqRange={{start: 550, end:  852}} position = {[0 + spread*10,0,0]} color={'#FF2E37'} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[0]} freqRange={{start: 0, end:  2}} position = {[0,0,0]} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[1]} freqRange={{start: 4, end:  10}} position = {[0 + spread,0,0]}  flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[2]} freqRange={{start: 12, end:  16}} position = {[0 + spread*2,0,0]}  flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[3]} freqRange={{start: 18, end:  22}} position = {[0 + spread*3,0,0]}  flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[4]} freqRange={{start: 40, end:  60}} position = {[0 + spread*4,0,0]}  flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[5]} freqRange={{start: 62, end:  80}} position = {[0 + spread*5,0,0]}  flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[6]} freqRange={{start: 82, end:  100}} position = {[0 + spread*6,0,0]}  flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[7]} freqRange={{start: 100, end:  140}} position = {[0 + spread*7,0,0]} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[8]} freqRange={{start: 146, end:  190}} position = {[0 + spread*8,0,0]} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[9]} freqRange={{start: 264, end:  542}} position = {[0 + spread*9,0,0]} flat={flat}/>
+        <Wire analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_11[10]} freqRange={{start: 550, end:  852}} position = {[0 + spread*10,0,0]}  flat={flat}/>
       </>
     )
   }
 
-  renderVisualizer(visualizerType: string, spread: number, offset: number){
+  renderVisualizer(visualizerType: string, spread: number, offset: number, param1: number, param2: number){
     switch(visualizerType) { 
       case "horizontalLines": { 
         return this.horizontalLines(spread, offset);
@@ -702,16 +713,16 @@ export default class App extends React.Component<any, any> {
         return this.verticalLines(spread, offset);
       }
       case "circular": { 
-        return this.circular();
+        return this.circular(param1, param2);
       }
       case "bolt": { 
         return this.bolt();
       } 
       case "rings": { 
-        return this.rings(0.02, 1);
+        return this.rings(0.02, 1, param1, param2);
       } 
       case "fractal": { 
-        return this.rings(0.02, 0);
+        return this.rings(0.02, 0, param1, param2);
       } 
       case "solid": { 
         return this.solidColor();
@@ -726,7 +737,7 @@ export default class App extends React.Component<any, any> {
         return this.wires(spread, true);
       }
       default: {
-        return this.circular();
+        return this.circular(param1, param2);
       } 
    } 
   }
@@ -734,7 +745,15 @@ export default class App extends React.Component<any, any> {
   visualizerChanged = (e: any) => {
     this.setState({visualizerType: e.target.value});
   }
+  
+  paletteChanged = (e: any) => {
+    this.setState({colorIndex: parseInt(e.target.value)});
+  }
 
+  presetNameChanged = (e: any) => {
+    this.setState({presetName: e.target.value});
+  }
+  
   spreadChanged = (e: any) => {
     this.setState({spread: e.target.value});
   }
@@ -743,9 +762,30 @@ export default class App extends React.Component<any, any> {
     this.setState({offset: e.target.value});
   }
 
+  param1Changed = (e: any, val: any) => {
+    this.setState({param1: val});
+  }
+
+  param2Changed = (e: any, val: any) => {
+    this.setState({param2: val});
+  }
+
+  onSavePreset = (e: any) => {
+    let state: Preset = {
+      presetName: this.state.presetName,
+      visualizerType: this.state.visualizerType,
+      colorIndex: this.state.colorIndex,
+      spread: this.state.spread,
+      offset: this.state.offset,
+      param1: this.state.param1,
+      param2: this.state.param2
+    }
+    console.log(JSON.stringify(state));
+  }
+
   render() {
 
-    const options = [
+    const visOptions = [
       { value: 'horizontalLines', label: 'Horizontal Lines' },
       { value: 'verticalLines', label: 'Vertical Lines' },
       { value: 'circular', label: 'Circles' },
@@ -760,24 +800,66 @@ export default class App extends React.Component<any, any> {
 
     return (
       <>
-        <Select id="visualizerType"
-            value={this.state.visualizerType}
-            onChange={this.visualizerChanged}>
-              {options.map((o) => <MenuItem value={o.value}>{o.label}</MenuItem>)}
-        </Select>
-        <TextField id="spread"
-            value={this.state.spread}
-            onChange={this.spreadChanged} 
-        />
-        <TextField id="offset"
-            value={this.state.offset}
-            onChange={this.offsetChanged} 
-        />
+        <div id="uiContainer">
+          <div id="selectContainer">
+            <Select id="visualizerType"
+                value={this.state.visualizerType}
+                variant="filled"
+                onChange={this.visualizerChanged}>
+                  {visOptions.map((o) => <MenuItem value={o.value}>{o.label}</MenuItem>)}
+            </Select>
+            <Select id="paletteType"
+                value={this.state.colorIndex}
+                variant="filled"
+                onChange={this.paletteChanged}>
+                  {ColorPalettes.map((p, index) => <MenuItem value={index}>{p.name}</MenuItem>)}
+            </Select>
+            <TextField id="presetName"
+                value={this.state.presetName}
+                placeholder="Preset Name"
+                variant="filled"
+                onChange={this.presetNameChanged} 
+            />
+            <TextField id="spread"
+                value={this.state.spread}
+                variant="filled"
+                onChange={this.spreadChanged} 
+            />
+            <TextField id="offset"
+                value={this.state.offset}
+                variant="filled"
+                onChange={this.offsetChanged} 
+            />
+            <Button onClick={this.onSavePreset} variant="contained">
+              Print
+            </Button>
+          </div>
+          <div id="sliderContainer">
+            <Slider
+              defaultValue={10}
+              value={this.state.param1}
+              step={1}
+              min={1}
+              max={100}
+              valueLabelDisplay="on"
+              onChange={this.param1Changed}
+            />
+            <Slider
+              defaultValue={0.2}
+              value={this.state.param2}
+              step={0.1}
+              min={0}
+              max={3}
+              valueLabelDisplay="on"
+              onChange={this.param2Changed}
+            />
+          </div>
+        </div>
         <Canvas className={'App'}>
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
           <pointLight position={[-10, -10, -10]} />
-          {this.renderVisualizer(this.state.visualizerType, this.state.spread, this.state.offset)}
+          {this.renderVisualizer(this.state.visualizerType, this.state.spread, this.state.offset, this.state.param1, this.state.param2)}
         </Canvas>
       </>
       
