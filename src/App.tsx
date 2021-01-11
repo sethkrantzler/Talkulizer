@@ -412,11 +412,11 @@ function Circle(props: any) {
   const lineSegments = 500.0;
   const size = 5.0;
 
-  for (let i = 0; i < lineSegments; i++) {
-    linePoints.push(new Vector2(size + (-2*size*i/lineSegments), Math.random()));
-  }
 
   useEffect(()=> {
+    for (let i = 0; i < lineSegments; i++) {
+      linePoints.push(new Vector2(size + (-2*size*i/lineSegments), Math.random()));
+    }
     if (!!props.analyzer && bufferLength == 0) {
       bufferLength = props.analyzer.frequencyBinCount;
       amplitudeArray = new Uint8Array(bufferLength);
@@ -475,6 +475,80 @@ function Circle(props: any) {
       ref={lineRef}
       {...props}
       scale={[props.bolt ? 1 : props.radius, props.bolt ? 1 : props.radius, 1]}>
+      <circleGeometry ref={geoRef} args={[1, 500]} attach="geometry" />
+      <meshBasicMaterial color={props.color} />
+    </mesh>
+  );
+}
+
+function Manta(props: any) {
+  const geoRef = useRef<any>(null);
+  const lineRef = useRef<any>(null);
+
+  let bufferLength = 0;
+  let amplitudeArray = new Uint8Array(0);
+
+  // Initialize vertices
+  const totalPoints = 500;
+  let hasSetMesh = false;
+
+  useEffect(()=> {
+    hasSetMesh = false;
+    if (!!props.analyzer && bufferLength == 0) {
+      bufferLength = props.analyzer.frequencyBinCount;
+      amplitudeArray = new Uint8Array(bufferLength);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+    }
+  });
+
+  function getShape(){
+    let result = [];
+    const stepSize = 2*Math.PI / totalPoints;
+    for (let i = 0; i < totalPoints; i++) {
+      const t = i+1 * stepSize;
+      let x = (props.size*Math.cos(props.n*t))*Math.cos(t);
+      let y = (props.size*Math.cos(props.n*t))*Math.sin(t);
+      result.push(new Vector3(x,y,0));
+    }
+    console.log("linePoint 1", result[1]);
+    return result;
+  }
+
+  function average(nums: Uint8Array) {
+    return nums.reduce((a, b) => (a + b)) / nums.length;
+  }
+
+
+  function calculatePosition(freqArray: Uint8Array){
+    return lineRef.current.position.x > 4 ? new Vector3(0,0,0): new Vector3(lineRef.current.position.x+ Math.random()*0.3,0,0);
+  }
+
+  useFrame(() => {
+    if (lineRef && lineRef.current && !hasSetMesh) {
+      lineRef.current.geometry.setFromPoints(getShape());
+      lineRef.current.geometry.verticesNeedUpdate = true;
+      hasSetMesh = true;
+    }
+    if (lineRef && lineRef.current && !!props.analyzer && amplitudeArray) {
+      lineRef.current.scale.set(lineRef.current.scale.x + props.scaleRate, lineRef.current.scale.y + props.scaleRate, lineRef.current.scale.z);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+      const newPosition = calculatePosition(amplitudeArray);
+      lineRef.current.position.x = newPosition.x;
+      lineRef.current.position.y = newPosition.y;
+      lineRef.current.position.z = newPosition.z;
+      if (lineRef.current.scale.x > 15) {
+        lineRef.current.scale.set(10, 10, 10);
+        lineRef.current.position.set(lineRef.current.position.x, lineRef.current.position.y, lineRef.current.position.z + 0.0001)
+      }
+    }
+  });
+  
+
+  return (
+    <mesh
+      ref={lineRef}
+      {...props}
+      scale={[10, 10, 10]}>
       <circleGeometry ref={geoRef} args={[1, 500]} attach="geometry" />
       <meshBasicMaterial color={props.color} />
     </mesh>
@@ -559,10 +633,10 @@ export default class App extends React.Component<any, any> {
     super(props);
     this.state = {
       analyzer: null, 
-      visualizerType: "circular",
+      visualizerType: "manta",
       spread: 1,
       offset: 1.3,
-      param1: 10,
+      param1: 2,
       param2: 0.2,
       colorIndex: 0,
       presetName: "",
@@ -573,8 +647,7 @@ export default class App extends React.Component<any, any> {
   }
 
   componentDidMount(){
-    console.log(navigator.mediaDevices.enumerateDevices());
-    navigator.mediaDevices.getUserMedia({audio: { deviceId: "431582f34050a2bfccfa301b314524bfb30b31eedb7ae5c55a18d448ae6af14b" } })
+    navigator.mediaDevices.getUserMedia({audio: true })
       .then(this.handleAudio)
       .catch(this.audioError);
     this.fetchPresets();
@@ -668,6 +741,23 @@ export default class App extends React.Component<any, any> {
     )
   }
 
+  manta(n: number, size: number) {
+    const numCircles = 6;
+    const maxRadius = 10;
+    const radiusScale=maxRadius/numCircles;
+    const scaleRate=0.01;
+    return (
+      <>
+        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
+      </>
+    )
+  }
+
   rings(ringSize: number, indexStart: number, n: number, ringWidth: number) {
     const numRings = 6;
     const maxRadius = 10;
@@ -748,6 +838,9 @@ export default class App extends React.Component<any, any> {
       case "flat": { 
         return this.wires(spread, true);
       }
+      case "manta": { 
+        return this.manta(param1, param2);
+      }
       default: {
         return this.circular(param1, param2);
       } 
@@ -822,6 +915,7 @@ export default class App extends React.Component<any, any> {
       { value: 'wires', label: "Wires"},
       { value: 'flat', label: "Flat"},
       { value: 'fractal', label: 'Fractal' },
+      { value: 'manta', label: 'Manta' },
     ];
 
     return (
