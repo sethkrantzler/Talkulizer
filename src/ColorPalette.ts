@@ -28,12 +28,23 @@ export const ColorPalettes: ColorPalette[] = [
     {
         name: 'Sunset',
         palette_6: ["#d00000", "#dc2f02", "#e85d04", "#f48c06", "#faa307", "#ffba08"],
-        palette_11: ["#6a040f","#d00000","#dc2f02", "#dc2f02", "#e85d04", "#f48c06", "#EE5622", "#faa307", "#ffba12", "#ffba08", "#faff00"]
+        palette_11: ["#6a040f","#d00000","#dc2f02", "#dc2f02", "#e85d04", "#EE5622", "#f48c06", "#faa307", "#ffba12", "#ffba08", "#faff00"]
     },
     {
         name: 'Earth',
         palette_6: ["#606c38", "#283618", "#fefae0", "#dda15e", "#bc6c25", "#6a040f"],
         palette_11: ["#606c38", "#ccd5ae", "#e9edc9", "#d4a373", "#edf2f4", "#283618","#faedcd", "#fefae0", "#dda15e", "#bc6c25", "#6a040f"]
     },
+    {
+        name: 'Cherry Blossom',
+        palette_6: ["#D6B95A", "#69306D", "#A5668B", "#4CBFAC", "#D00000", "#F2D7EE"],
+        palette_11: ["#D6B95A", "#DEFFF2", "#4CBFAC", "#F2D7EE", "#A1275D", "#FFFFFF","#A1275D", "#F2D7EE", "#4CBFAC", "#DEFFF2", "#D6B95A"]
+    },
 ]
+
+// {
+//     name: '',
+//     palette_6: ["#", "#", "#", "#", "#", "#"],
+//     palette_11: ["#", "#", "#", "#", "#", "#","#", "#", "#", "#", "#"]
+// },
     

@@ -5,6 +5,7 @@ import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeome
 import './App.css';
 import { Input, MenuItem, Select, TextField, Slider, Button } from '@material-ui/core';
 import { ColorPalettes } from './ColorPalette';
+import axios from 'axios';
 
 interface FrequencyRange {
   start: number;
@@ -552,6 +553,8 @@ function Wire(props: any) {
 }
 
 export default class App extends React.Component<any, any> {
+  private dbUrl: string;
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -562,14 +565,23 @@ export default class App extends React.Component<any, any> {
       param1: 10,
       param2: 0.2,
       colorIndex: 0,
-      presetName: ""
+      presetName: "",
+      presetSelected: "",
+      presets: []
     };
+    this.dbUrl = "http://localhost:3001/presets";
   }
 
   componentDidMount(){
-    navigator.mediaDevices.getUserMedia({audio: true})
+    console.log(navigator.mediaDevices.enumerateDevices());
+    navigator.mediaDevices.getUserMedia({audio: { deviceId: "431582f34050a2bfccfa301b314524bfb30b31eedb7ae5c55a18d448ae6af14b" } })
       .then(this.handleAudio)
       .catch(this.audioError);
+    this.fetchPresets();
+  }
+
+  fetchPresets(){
+    axios.get(this.dbUrl).then((resp) => this.setState({presets: resp.data}));
   }
 
   initializeAudioAnalyser = (stream: MediaStream) => {
@@ -780,7 +792,21 @@ export default class App extends React.Component<any, any> {
       param1: this.state.param1,
       param2: this.state.param2
     }
-    console.log(JSON.stringify(state));
+    axios.post(this.dbUrl, state).then(()=> {
+      this.fetchPresets();
+      this.setState({presetName: ""});
+    }).catch((err) => console.log(err));
+  }
+
+  onPresetSelected = (e: any) => {
+    let selectedPreset = this.state.presets[e.target.value];
+    this.setState({ visualizerType: selectedPreset.visualizerType,
+      colorIndex: selectedPreset.colorIndex,
+      spread: selectedPreset.spread,
+      offset: selectedPreset.offset,
+      param1: selectedPreset.param1,
+      param2: selectedPreset.param2
+    });
   }
 
   render() {
@@ -804,34 +830,41 @@ export default class App extends React.Component<any, any> {
           <div id="selectContainer">
             <Select id="visualizerType"
                 value={this.state.visualizerType}
-                variant="filled"
+                variant="outlined"
                 onChange={this.visualizerChanged}>
                   {visOptions.map((o) => <MenuItem value={o.value}>{o.label}</MenuItem>)}
             </Select>
             <Select id="paletteType"
                 value={this.state.colorIndex}
-                variant="filled"
+                variant="outlined"
                 onChange={this.paletteChanged}>
                   {ColorPalettes.map((p, index) => <MenuItem value={index}>{p.name}</MenuItem>)}
+            </Select>
+            <Select id="selectedPreset"
+                value={this.state.selectedPreset}
+                label="Selected Preset"
+                variant="outlined"
+                onChange={this.onPresetSelected}>
+                  {this.state.presets.map((p: Preset, index: any) => <MenuItem value={index}>{p.presetName}</MenuItem>)}
             </Select>
             <TextField id="presetName"
                 value={this.state.presetName}
                 placeholder="Preset Name"
-                variant="filled"
+                variant="outlined"
                 onChange={this.presetNameChanged} 
             />
             <TextField id="spread"
                 value={this.state.spread}
-                variant="filled"
+                variant="outlined"
                 onChange={this.spreadChanged} 
             />
             <TextField id="offset"
                 value={this.state.offset}
-                variant="filled"
+                variant="outlined"
                 onChange={this.offsetChanged} 
             />
             <Button onClick={this.onSavePreset} variant="contained">
-              Print
+              Save
             </Button>
           </div>
           <div id="sliderContainer">

@@ -1,0 +1,334 @@
+{
+  "presets": [
+    {
+      "presetName": "MantaRay",
+      "visualizerType": "circular",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0,
+      "id": 1
+    },
+    {
+      "presetName": "Hanglider",
+      "visualizerType": "circular",
+      "colorIndex": 4,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 3,
+      "param2": 0,
+      "id": 2
+    },
+    {
+      "presetName": "Fractal_4_Petals",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0,
+      "id": 3
+    },
+    {
+      "presetName": "Wisps_3",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 3,
+      "param2": 0,
+      "id": 4
+    },
+    {
+      "presetName": "Wisps_7",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 7,
+      "param2": 0,
+      "id": 5
+    },
+    {
+      "presetName": "Martini",
+      "visualizerType": "fractal",
+      "colorIndex": 5,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.1,
+      "id": 6
+    },
+    {
+      "presetName": "Vert Rainbow",
+      "visualizerType": "verticalLines",
+      "colorIndex": 0,
+      "spread": "0",
+      "offset": "0",
+      "param1": 2,
+      "param2": 0,
+      "id": 7
+    },
+    {
+      "presetName": "FlatVertCyber",
+      "visualizerType": "verticalLines",
+      "colorIndex": 2,
+      "spread": "0",
+      "offset": "0",
+      "param1": 2,
+      "param2": 0,
+      "id": 8
+    },
+    {
+      "presetName": "FlatHorzRainbow",
+      "visualizerType": "horizontalLines",
+      "colorIndex": 0,
+      "spread": "0",
+      "offset": "0",
+      "param1": 2,
+      "param2": 0,
+      "id": 9
+    },
+    {
+      "presetName": "RainbowTop",
+      "visualizerType": "rings",
+      "colorIndex": 0,
+      "spread": "0",
+      "offset": "0",
+      "param1": 1,
+      "param2": 0.1,
+      "id": 10
+    },
+    {
+      "presetName": "Blam!",
+      "visualizerType": "rings",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 9,
+      "param2": 0,
+      "id": 11
+    },
+    {
+      "presetName": "MapleLeaf",
+      "visualizerType": "rings",
+      "colorIndex": 6,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 9,
+      "param2": 0.3,
+      "id": 12
+    },
+    {
+      "presetName": "Pentagon_0",
+      "visualizerType": "rings",
+      "colorIndex": 1,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 5,
+      "param2": 0,
+      "id": 13
+    },
+    {
+      "presetName": "HorshoeCrab",
+      "visualizerType": "circular",
+      "colorIndex": 5,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 10,
+      "param2": 0,
+      "id": 14
+    },
+    {
+      "presetName": "AirheadXtreme",
+      "visualizerType": "verticalLines",
+      "colorIndex": 0,
+      "spread": "1",
+      "offset": ".2",
+      "param1": 10,
+      "param2": 0,
+      "id": 15
+    },
+    {
+      "presetName": "Zeus",
+      "visualizerType": "bolt",
+      "colorIndex": 3,
+      "spread": "1",
+      "offset": "0",
+      "param1": 10,
+      "param2": 0,
+      "id": 16
+    },
+    {
+      "presetName": "Kscope_1",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 11,
+      "param2": 0.2,
+      "id": 17
+    },
+    {
+      "presetName": "PaintSpin",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 73,
+      "param2": 0,
+      "id": 18
+    },
+    {
+      "presetName": "LargeSpiral",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 97,
+      "param2": 0,
+      "id": 19
+    },
+    {
+      "presetName": "SandDollar",
+      "visualizerType": "fractal",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 4,
+      "param2": 0.5,
+      "id": 20
+    },
+    {
+      "presetName": "binky1",
+      "visualizerType": "rings",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 4,
+      "param2": 0.5,
+      "id": 21
+    },
+    {
+      "presetName": "Tarp",
+      "visualizerType": "rings",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 4,
+      "param2": 0.1,
+      "id": 22
+    },
+    {
+      "presetName": "Sheriff Paddack",
+      "visualizerType": "rings",
+      "colorIndex": 4,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 8,
+      "param2": 0.1,
+      "id": 23
+    },
+    {
+      "presetName": "Helios",
+      "visualizerType": "rings",
+      "colorIndex": 4,
+      "spread": ".14",
+      "offset": 1.3,
+      "param1": 8,
+      "param2": 0,
+      "id": 24
+    },
+    {
+      "presetName": "Propeller",
+      "visualizerType": "rings",
+      "colorIndex": 1,
+      "spread": ".14",
+      "offset": 1.3,
+      "param1": 3,
+      "param2": 0.1,
+      "id": 25
+    },
+    {
+      "presetName": "Noisey in Joisey",
+      "visualizerType": "rings",
+      "colorIndex": 2,
+      "spread": "0",
+      "offset": "0",
+      "param1": 74,
+      "param2": 0.1,
+      "id": 26
+    },
+    {
+      "presetName": "$.99",
+      "visualizerType": "wires",
+      "colorIndex": 6,
+      "spread": "0.12",
+      "offset": 1.3,
+      "param1": 10,
+      "param2": 0.2,
+      "id": 27
+    },
+    {
+      "presetName": "Sakura",
+      "visualizerType": "rings",
+      "colorIndex": 6,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 80,
+      "param2": 0.1,
+      "id": 28
+    },
+    {
+      "presetName": "Eye of the Dragon",
+      "visualizerType": "circular",
+      "colorIndex": 6,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 40,
+      "param2": 0.3,
+      "id": 29
+    },
+    {
+      "presetName": "Stuffed Olive",
+      "visualizerType": "circular",
+      "colorIndex": 5,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 1,
+      "param2": 0.3,
+      "id": 30
+    },
+    {
+      "presetName": "Medusa's Eye",
+      "visualizerType": "circular",
+      "colorIndex": 5,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 39,
+      "param2": 0.3,
+      "id": 31
+    },
+    {
+      "presetName": "Pagoda",
+      "visualizerType": "rings",
+      "colorIndex": 6,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 4,
+      "param2": 0.1,
+      "id": 32
+    },
+    {
+      "presetName": "Jammin'",
+      "visualizerType": "horizontalLines",
+      "colorIndex": 2,
+      "spread": "0",
+      "offset": "0.4",
+      "param1": 4,
+      "param2": 0.1,
+      "id": 33
+    }
+  ]
+}

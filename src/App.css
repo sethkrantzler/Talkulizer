@@ -20,7 +20,11 @@ html{
 
 #presetName{
   color: white;
-  width: 200px;
+  width: 50%;
+}
+
+#selectedPreset{
+  color: white;
 }
 
 #sliderContainer{
