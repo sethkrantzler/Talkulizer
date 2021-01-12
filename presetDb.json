@@ -389,6 +389,146 @@
       "param1": 4,
       "param2": 0,
       "id": 39
+    },
+    {
+      "presetName": "Solar System",
+      "visualizerType": "racecar",
+      "colorIndex": 0,
+      "spread": 256.5,
+      "offset": 3.5,
+      "param1": 1,
+      "param2": 0.2,
+      "id": 40
+    },
+    {
+      "presetName": "Small Manta",
+      "visualizerType": "racecar",
+      "colorIndex": 3,
+      "spread": 128.5,
+      "offset": 9.5,
+      "param1": 2,
+      "param2": 0.1,
+      "id": 41
+    },
+    {
+      "presetName": "Big Manta",
+      "visualizerType": "racecar",
+      "colorIndex": 0,
+      "spread": 128.5,
+      "offset": 9.6,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 42
+    },
+    {
+      "presetName": "Collision",
+      "visualizerType": "racecar",
+      "colorIndex": 6,
+      "spread": 188.5,
+      "offset": 13,
+      "param1": 1,
+      "param2": 0.2,
+      "id": 43
+    },
+    {
+      "presetName": "Pizzaparaglider",
+      "visualizerType": "slide",
+      "colorIndex": 0,
+      "spread": 408.5,
+      "offset": 7.4,
+      "param1": 3,
+      "param2": 0.2,
+      "id": 44
+    },
+    {
+      "presetName": "Speedy Manta",
+      "visualizerType": "slide",
+      "colorIndex": 0,
+      "spread": 910,
+      "offset": 7.4,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 45
+    },
+    {
+      "presetName": "Migrating Horshoe Crab",
+      "visualizerType": "slide",
+      "colorIndex": 5,
+      "spread": 156.5,
+      "offset": 7.4,
+      "param1": 4,
+      "param2": 0.2,
+      "id": 46
+    },
+    {
+      "presetName": "Falling Blossoms",
+      "visualizerType": "slide",
+      "colorIndex": 6,
+      "spread": 171.5,
+      "offset": 7.4,
+      "param1": 88,
+      "param2": 0.2,
+      "id": 47
+    },
+    {
+      "presetName": "Moving Pagoda",
+      "visualizerType": "slide",
+      "colorIndex": 4,
+      "spread": 566.5,
+      "offset": 7.4,
+      "param1": 7,
+      "param2": 0.2,
+      "id": 48
+    },
+    {
+      "presetName": "Paragliding Pizza",
+      "visualizerType": "racecar_off",
+      "colorIndex": 4,
+      "spread": 134,
+      "offset": 7.4,
+      "param1": 3,
+      "param2": 0.2,
+      "id": 49
+    },
+    {
+      "presetName": "Origami",
+      "visualizerType": "racecar_off",
+      "colorIndex": 5,
+      "spread": 501.5,
+      "offset": 1.3,
+      "param1": 6,
+      "param2": 0.3,
+      "id": 50
+    },
+    {
+      "presetName": "Flipping Blossoms",
+      "visualizerType": "slide_off",
+      "colorIndex": 6,
+      "spread": 243.5,
+      "offset": 7.4,
+      "param1": 88,
+      "param2": 0.2,
+      "id": 52
+    },
+    {
+      "presetName": "Pollux",
+      "visualizerType": "trails",
+      "colorIndex": 4,
+      "spread": 135.5,
+      "offset": 3.6,
+      "param1": 1,
+      "param2": 0.2,
+      "id": 53
+    },
+    {
+      "presetName": "Sethawks",
+      "visualizerType": "racecar_off",
+      "colorIndex": 1,
+      "spread": 178,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.3,
+      "id": 54
     }
   ]
 }

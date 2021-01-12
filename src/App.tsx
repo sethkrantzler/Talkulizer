@@ -481,7 +481,7 @@ function Circle(props: any) {
   );
 }
 
-function Manta(props: any) {
+function Racecar(props: any) {
   const geoRef = useRef<any>(null);
   const lineRef = useRef<any>(null);
 
@@ -492,6 +492,9 @@ function Manta(props: any) {
   const totalPoints = 500;
   let hasSetMesh = false;
 
+  const [pos, setPos] = useState(0);
+
+
   useEffect(()=> {
     hasSetMesh = false;
     if (!!props.analyzer && bufferLength == 0) {
@@ -501,17 +504,13 @@ function Manta(props: any) {
     }
   });
 
-  function getShape(){
-    let result = [];
-    const stepSize = 2*Math.PI / totalPoints;
-    for (let i = 0; i < totalPoints; i++) {
+  function setShape(vertices: Vector3[]){
+    const stepSize = 2*Math.PI / vertices.length;
+    for (let i = 0; i < vertices.length; i++) {
       const t = i+1 * stepSize;
-      let x = (props.size*Math.cos(props.n*t))*Math.cos(t);
-      let y = (props.size*Math.cos(props.n*t))*Math.sin(t);
-      result.push(new Vector3(x,y,0));
+      vertices[i].x = (props.size*Math.cos(props.n*t))*Math.cos(t);
+      vertices[i].y = (props.size*Math.cos(props.n*t))*Math.sin(t);
     }
-    console.log("linePoint 1", result[1]);
-    return result;
   }
 
   function average(nums: Uint8Array) {
@@ -519,27 +518,51 @@ function Manta(props: any) {
   }
 
 
-  function calculatePosition(freqArray: Uint8Array){
-    return lineRef.current.position.x > 4 ? new Vector3(0,0,0): new Vector3(lineRef.current.position.x+ Math.random()*0.3,0,0);
+  function calculatePosition(freqData: Uint8Array){
+    const freqArray = freqData.subarray(props.freqRange.start, props.freqRange.end);
+    const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
+    if (props.loop){
+      let t: number;
+      if (props.seperate){
+        const newT = pos+((freqAvg/255.0)+0.15)*(props.speed/1000.0);
+        t = newT > (Math.PI) ? (Math.PI*-1) : newT;
+        setPos(t);
+      }
+      else {
+        t = (Math.PI/(2.0*props.speed*2.5))*(Date.now()%(props.speed*10))-(Math.PI/4.0)+(freqAvg/255.0)*0.5;
+      }
+      let x = (props.lineWidth*Math.cos(t))/(1+Math.pow(Math.sin(t), 2));
+      let y = (props.lineWidth*Math.sin(t)*Math.cos(t))/(1+Math.pow(Math.sin(t), 2));;
+      return new Vector3(x, y, 0);
+    }
+    else {
+      return lineRef.current.position.x > 8 ? new Vector3(-8,0,0): new Vector3(lineRef.current.position.x + ((freqAvg/255.0)+0.4)*(props.speed/1000.0),0,0);
+    }
   }
 
   useFrame(() => {
     if (lineRef && lineRef.current && !hasSetMesh) {
-      lineRef.current.geometry.setFromPoints(getShape());
+      setShape(lineRef.current.geometry.vertices);
       lineRef.current.geometry.verticesNeedUpdate = true;
+      lineRef.current.rotation.x = 0;
+      lineRef.current.rotation.y = 0;
+      lineRef.current.rotation.z = 0;
       hasSetMesh = true;
     }
-    if (lineRef && lineRef.current && !!props.analyzer && amplitudeArray) {
-      lineRef.current.scale.set(lineRef.current.scale.x + props.scaleRate, lineRef.current.scale.y + props.scaleRate, lineRef.current.scale.z);
+    if (lineRef && lineRef.current && geoRef && !!props.analyzer && amplitudeArray) {
+      let newRotation: Vector3;
       props.analyzer.getByteFrequencyData(amplitudeArray);
       const newPosition = calculatePosition(amplitudeArray);
+      if (props.offaxis && props.loop){
+        newRotation=new Vector3(newPosition.x - lineRef.current.position.x, newPosition.y - lineRef.current.position.y, 0);
+        lineRef.current.lookAt(newRotation)
+      }
+      else if (props.offaxis && !props.loop) {
+        lineRef.current.lookAt(new Vector3(0,1,0));
+      }
       lineRef.current.position.x = newPosition.x;
       lineRef.current.position.y = newPosition.y;
       lineRef.current.position.z = newPosition.z;
-      if (lineRef.current.scale.x > 15) {
-        lineRef.current.scale.set(10, 10, 10);
-        lineRef.current.position.set(lineRef.current.position.x, lineRef.current.position.y, lineRef.current.position.z + 0.0001)
-      }
     }
   });
   
@@ -633,7 +656,7 @@ export default class App extends React.Component<any, any> {
     super(props);
     this.state = {
       analyzer: null, 
-      visualizerType: "manta",
+      visualizerType: "racecar",
       spread: 1,
       offset: 1.3,
       param1: 2,
@@ -686,7 +709,7 @@ export default class App extends React.Component<any, any> {
         <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[2]} position={[0, 0 - offset, -1]}  freqRange={{start: 13, end:  22}}/>
         <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[3]} position={[0, (spread*1) - offset, -1]} freqRange={{start: 40, end:  88}}/>
         <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[4]} position={[0, (spread*2) - offset, -1]} freqRange={{start: 100, end:  256}}/>
-        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[5]} position={[0, (spread*3) - offset, -1]} freqRange={{start: 500, end:  852}}/>
+        <HorizontalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[5]} position={[0, (spread*3) - offset, -1]} freqRange={{start: 280, end:  500}}/>
       </>
     )
   }
@@ -719,7 +742,7 @@ export default class App extends React.Component<any, any> {
         <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
         <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
         <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
+        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
       </>
     )
   }
@@ -736,24 +759,24 @@ export default class App extends React.Component<any, any> {
         <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
         <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
         <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
+        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
       </>
     )
   }
 
-  manta(n: number, size: number) {
+  Racecar(n: number, size: number, speed: number, lineWidth: number, loop: boolean, seperate: boolean, offaxis?: boolean) {
     const numCircles = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numCircles;
     const scaleRate=0.01;
     return (
       <>
-        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
-        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
-        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
-        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
-        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Manta analyzer={this.state.analyzer} n={n} size={size} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
+        <Racecar analyzer={this.state.analyzer} n={n} size={size} speed={speed} lineWidth={lineWidth} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} loop={loop} seperate={seperate} offaxis={offaxis}/>
+        <Racecar analyzer={this.state.analyzer} n={n} size={size} speed={speed} lineWidth={lineWidth} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} loop={loop} seperate={seperate} offaxis={offaxis}/>
+        <Racecar analyzer={this.state.analyzer} n={n} size={size} speed={speed} lineWidth={lineWidth} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} loop={loop} seperate={seperate} offaxis={offaxis}/>
+        <Racecar analyzer={this.state.analyzer} n={n} size={size} speed={speed} lineWidth={lineWidth} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} loop={loop} seperate={seperate} offaxis={offaxis}/>
+        <Racecar analyzer={this.state.analyzer} n={n} size={size} speed={speed} lineWidth={lineWidth} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} loop={loop} seperate={seperate} offaxis={offaxis}/>
+        <Racecar analyzer={this.state.analyzer} n={n} size={size} speed={speed} lineWidth={lineWidth} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} loop={loop} seperate={seperate} offaxis={offaxis}/>
       </>
     )
   }
@@ -770,7 +793,7 @@ export default class App extends React.Component<any, any> {
         <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
         <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
         <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 500, end:  852}} />
+        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
       </>
     )
   }
@@ -783,7 +806,7 @@ export default class App extends React.Component<any, any> {
         <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[2]} position={[ 0 - offset, 0, -1]}  freqRange={{start: 13, end:  22}}/>
         <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[3]} position={[(spread*1) - offset, 0, -1]} freqRange={{start: 40, end:  88}}/>
         <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[4]} position={[(spread*2) - offset, 0, -1]} freqRange={{start: 100, end:  256}}/>
-        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[5]} position={[(spread*3) - offset, 0, -1]} freqRange={{start: 500, end:  852}}/>
+        <VerticalLine analyzer={this.state.analyzer} color={ColorPalettes[this.state.colorIndex].palette_6[5]} position={[(spread*3) - offset, 0, -1]} freqRange={{start: 280, end:  500}}/>
       </>
     )
   }
@@ -838,8 +861,23 @@ export default class App extends React.Component<any, any> {
       case "flat": { 
         return this.wires(spread, true);
       }
-      case "manta": { 
-        return this.manta(param1, param2);
+      case "racecar": { 
+        return this.Racecar(param1, param2, spread, offset, true, true, false);
+      }
+      case "trails": { 
+        return this.Racecar(param1, param2, spread, offset, true, false, false);
+      }
+      case "slide": { 
+        return this.Racecar(param1, param2, spread, offset, false, false, false);
+      }
+      case "racecar_off": { 
+        return this.Racecar(param1, param2, spread, offset, true, true, true);
+      }
+      case "trails_off": { 
+        return this.Racecar(param1, param2, spread, offset, true, false, true);
+      }
+      case "slide_off": { 
+        return this.Racecar(param1, param2, spread, offset, false, false, true);
       }
       default: {
         return this.circular(param1, param2);
@@ -859,12 +897,12 @@ export default class App extends React.Component<any, any> {
     this.setState({presetName: e.target.value});
   }
   
-  spreadChanged = (e: any) => {
-    this.setState({spread: e.target.value});
+  spreadChanged = (e: any, val: any) => {
+    this.setState({spread: val});
   }
 
-  offsetChanged = (e: any) => {
-    this.setState({offset: e.target.value});
+  offsetChanged = (e: any, val: any) => {
+    this.setState({offset: val});
   }
 
   param1Changed = (e: any, val: any) => {
@@ -915,7 +953,12 @@ export default class App extends React.Component<any, any> {
       { value: 'wires', label: "Wires"},
       { value: 'flat', label: "Flat"},
       { value: 'fractal', label: 'Fractal' },
-      { value: 'manta', label: 'Manta' },
+      { value: 'racecar', label: 'Race' },
+      { value: 'trails', label: 'Trails' },
+      { value: 'slide', label: 'Slide' },
+      { value: 'racecar_off', label: 'Helix' },
+      { value: 'trails_off', label: 'Layers' },
+      { value: 'slide_off', label: 'Carousel' }
     ];
 
     return (
@@ -947,16 +990,6 @@ export default class App extends React.Component<any, any> {
                 variant="outlined"
                 onChange={this.presetNameChanged} 
             />
-            <TextField id="spread"
-                value={this.state.spread}
-                variant="outlined"
-                onChange={this.spreadChanged} 
-            />
-            <TextField id="offset"
-                value={this.state.offset}
-                variant="outlined"
-                onChange={this.offsetChanged} 
-            />
             <Button onClick={this.onSavePreset} variant="contained">
               Save
             </Button>
@@ -979,6 +1012,24 @@ export default class App extends React.Component<any, any> {
               max={3}
               valueLabelDisplay="on"
               onChange={this.param2Changed}
+            />
+             <Slider
+              defaultValue={10}
+              value={this.state.spread}
+              step={0.5}
+              min={0}
+              max={1000}
+              valueLabelDisplay="on"
+              onChange={this.spreadChanged}
+            />
+            <Slider
+              defaultValue={0.2}
+              value={this.state.offset}
+              step={0.1}
+              min={0}
+              max={20}
+              valueLabelDisplay="on"
+              onChange={this.offsetChanged}
             />
           </div>
         </div>
