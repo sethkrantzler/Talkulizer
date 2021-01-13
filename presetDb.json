@@ -529,6 +529,16 @@
       "param1": 2,
       "param2": 0.3,
       "id": 54
+    },
+    {
+      "presetName": "Mr. Ray",
+      "visualizerType": "trails_off",
+      "colorIndex": 3,
+      "spread": 123.5,
+      "offset": 1.6,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 55
     }
   ]
 }

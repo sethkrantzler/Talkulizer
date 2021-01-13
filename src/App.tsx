@@ -560,6 +560,9 @@ function Racecar(props: any) {
       else if (props.offaxis && !props.loop) {
         lineRef.current.lookAt(new Vector3(0,1,0));
       }
+      else {
+        lineRef.current.lookAt(new Vector3(newPosition.x, newPosition.y, 1));
+      }
       lineRef.current.position.x = newPosition.x;
       lineRef.current.position.y = newPosition.y;
       lineRef.current.position.z = newPosition.z;
