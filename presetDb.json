@@ -539,6 +539,136 @@
       "param1": 2,
       "param2": 0.2,
       "id": 55
+    },
+    {
+      "presetName": "Hyperspeed",
+      "visualizerType": "noise",
+      "colorIndex": 0,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 56
+    },
+    {
+      "presetName": "Literally Acid",
+      "visualizerType": "noise_off",
+      "colorIndex": 0,
+      "spread": 43.5,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 57
+    },
+    {
+      "presetName": "Chuckie Cheese",
+      "visualizerType": "noise_off",
+      "colorIndex": 0,
+      "spread": 26.5,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 58
+    },
+    {
+      "presetName": "Kablam!",
+      "visualizerType": "noise_off",
+      "colorIndex": 0,
+      "spread": 26.5,
+      "offset": 4.2,
+      "param1": 7,
+      "param2": 0.2,
+      "id": 59
+    },
+    {
+      "presetName": "Broken Kaleidoscope",
+      "visualizerType": "noise_off",
+      "colorIndex": 0,
+      "spread": 109,
+      "offset": 0.1,
+      "param1": 46,
+      "param2": 0.1,
+      "id": 60
+    },
+    {
+      "presetName": "Jungle",
+      "visualizerType": "noise",
+      "colorIndex": 5,
+      "spread": 9.5,
+      "offset": 0.7,
+      "param1": 24,
+      "param2": 1,
+      "id": 61
+    },
+    {
+      "presetName": "Honeycomb",
+      "visualizerType": "noise",
+      "colorIndex": 4,
+      "spread": 6.5,
+      "offset": 4.8,
+      "param1": 43,
+      "param2": 1.5,
+      "id": 62
+    },
+    {
+      "presetName": "Glacier",
+      "visualizerType": "noise",
+      "colorIndex": 3,
+      "spread": 6.5,
+      "offset": 10.7,
+      "param1": 1,
+      "param2": 1.8,
+      "id": 63
+    },
+    {
+      "presetName": "IceCaves",
+      "visualizerType": "noise_off",
+      "colorIndex": 3,
+      "spread": 20,
+      "offset": 1.2,
+      "param1": 14,
+      "param2": 0.3,
+      "id": 64
+    },
+    {
+      "presetName": "Icecaps",
+      "visualizerType": "noise",
+      "colorIndex": 3,
+      "spread": 20,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.2,
+      "id": 65
+    },
+    {
+      "presetName": "Mountainscape",
+      "visualizerType": "noise",
+      "colorIndex": 5,
+      "spread": 4.5,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.4,
+      "id": 66
+    },
+    {
+      "presetName": "Moderne",
+      "visualizerType": "racecar_off",
+      "colorIndex": 5,
+      "spread": 81.5,
+      "offset": 1.3,
+      "param1": 1,
+      "param2": 0.4,
+      "id": 67
+    },
+    {
+      "presetName": "Gears",
+      "visualizerType": "racecar",
+      "colorIndex": 5,
+      "spread": 313.5,
+      "offset": 1.3,
+      "param1": 37,
+      "param2": 0.2,
+      "id": 68
     }
   ]
 }
