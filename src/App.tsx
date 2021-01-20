@@ -757,6 +757,7 @@ function Wire(props: any) {
 
 export default class App extends React.Component<any, any> {
   private dbUrl: string;
+  private isLocalHost: Boolean;
 
   constructor(props: any) {
     super(props);
@@ -773,6 +774,13 @@ export default class App extends React.Component<any, any> {
       presets: []
     };
     this.dbUrl = "http://localhost:3001/presets";
+    this.isLocalHost  = Boolean(
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '[::1]' ||
+      window.location.hostname.match(
+          /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+      )
+  );
   }
 
   componentDidMount(){
@@ -783,7 +791,24 @@ export default class App extends React.Component<any, any> {
   }
 
   fetchPresets(){
-    axios.get(this.dbUrl).then((resp) => this.setState({presets: resp.data}));
+    if (!this.isLocalHost){
+      fetch('presetDb.json', {
+        headers : { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+         }
+      }
+      )
+        .then(function(response){
+          return response.json();
+        })
+        .then((json) => {
+          this.setState({presets: json.presets})
+        });
+    }
+    else {
+      axios.get(this.dbUrl).then((resp) => this.setState({presets: resp.data}));
+    }
   }
 
   initializeAudioAnalyser = (stream: MediaStream) => {
@@ -1115,6 +1140,8 @@ export default class App extends React.Component<any, any> {
                 onChange={this.onPresetSelected}>
                   {this.state.presets.map((p: Preset, index: any) => <MenuItem value={index}>{p.presetName}</MenuItem>)}
             </Select>
+            {this.isLocalHost && 
+            <>
             <TextField id="presetName"
                 value={this.state.presetName}
                 placeholder="Preset Name"
@@ -1124,6 +1151,7 @@ export default class App extends React.Component<any, any> {
             <Button onClick={this.onSavePreset} variant="contained">
               Save
             </Button>
+            </>}
           </div>
           <div id="sliderContainer">
             <Slider
