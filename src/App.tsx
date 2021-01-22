@@ -24,6 +24,59 @@ interface Preset {
   param2: number
 }
 
+function StandardBox(props: any) {
+  const geoRef = useRef<any>(null);
+  const lineRef = useRef<any>(null);
+  const topVertices = [true,true,false,false, true, true, false, false];
+
+  let bufferLength = 0;
+  let amplitudeArray = new Uint8Array(0);
+
+  useEffect(()=> {
+    if (!!props.analyzer && bufferLength == 0) {
+      bufferLength = props.analyzer.frequencyBinCount;
+      amplitudeArray = new Uint8Array(bufferLength);
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+    }
+  });
+
+  function average(nums: Uint8Array) {
+    return nums.reduce((a, b) => (a + b)) / nums.length;
+  }
+
+  function updateHeight(vertices: Vector3[], freqData: Uint8Array){
+    const freqArray = freqData.subarray(props.freqRange.start, props.freqRange.end);
+    const freqAvg = freqArray.length > 0 ? average(freqArray) : 0;
+    for (let i=0; i < vertices.length; i++){
+      vertices[i].y = !topVertices[i] ? 0 : props.height*freqAvg/(255.0);
+    }
+    return;
+  }
+
+
+  useFrame(() => {
+    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray) {
+      props.analyzer.getByteFrequencyData(amplitudeArray);
+      updateHeight(geoRef.current.vertices, amplitudeArray);
+      geoRef.current.verticesNeedUpdate = true;
+    }
+  });
+  
+
+  return (
+    <>
+      <mesh
+        ref={lineRef}
+        {...props}
+        scale={[1.0*props.width, 1, 0]}>
+        <boxGeometry ref={geoRef} attach="geometry" />
+        <meshBasicMaterial color={props.color} />
+      </mesh>
+    </>
+    
+  );
+}
+
 function HorizontalLine(props: any) {
   const geoRef = useRef<any>(null);
   const lineRef = useRef<any>(null);
@@ -763,7 +816,7 @@ export default class App extends React.Component<any, any> {
     super(props);
     this.state = {
       analyzer: null, 
-      visualizerType: "racecar",
+      visualizerType: "standard",
       spread: 1,
       offset: 1.3,
       param1: 2,
@@ -830,6 +883,27 @@ export default class App extends React.Component<any, any> {
   audioError = (err: any) => {
     console.log(err);
     alert("Something went wrong: " + err.name);
+  }
+
+  getColor(index: number, total: number){
+    return "#" + Math.random().toString(16).slice(2, 8);
+  }
+
+  standard(height: number, spread: number, bins: number, width: number) {
+    const maxX = 18;
+    let binWidth = Math.floor(1024/bins);
+    let boxes = [];
+    for (let i=0; i<bins; i++){
+      let boxWidth = ((maxX*2.0)/bins) - spread;
+      let x = - (maxX+(maxX/bins)) + (2*maxX/bins)*(i+1);
+      boxes.push(<StandardBox analyzer={this.state.analyzer} width={boxWidth} height={height} position={[x,0.5,-10]} color={this.getColor(i, bins)} freqRange={{start: binWidth*i, end: binWidth*i+binWidth-1}} />)
+    }
+    return (
+      <>
+        {boxes}
+      </>
+      
+    )
   }
 
   horizontalLines(offset: number, spread: number) {
@@ -979,6 +1053,9 @@ export default class App extends React.Component<any, any> {
 
   renderVisualizer(visualizerType: string, spread: number, offset: number, param1: number, param2: number){
     switch(visualizerType) { 
+      case "standard": { 
+        return this.standard(spread, offset, param1, param2);
+      }
       case "horizontalLines": { 
         return this.horizontalLines(spread, offset);
       }
@@ -1097,6 +1174,7 @@ export default class App extends React.Component<any, any> {
   render() {
 
     const visOptions = [
+      { value: 'standard', label: 'Standard' },
       { value: 'horizontalLines', label: 'Horizontal Lines' },
       { value: 'verticalLines', label: 'Vertical Lines' },
       { value: 'circular', label: 'Circles' },
