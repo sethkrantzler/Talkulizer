@@ -908,15 +908,14 @@ export default class App extends React.Component<any, any> {
     )
   }
 
-  standardRing(height: number, spread: number, bins: number, radius: number) {
+  standardRing(height: number, spread: number, bins: number, radius: number, extraRot: number) {
     let binWidth = Math.floor(1024/bins);
     let boxes = [];
     for (let i=0; i<bins; i++){
-      let boxWidth = 1;
       let theta = i*Math.PI*2/bins;
       let x = radius*Math.cos(theta);
       let y = radius*Math.sin(theta);
-      boxes.push(<StandardBox analyzer={this.state.analyzer} width={boxWidth} height={height} position={[x,y,-10]} color={this.getColor(i, bins)} freqRange={{start: binWidth*i, end: binWidth*i+binWidth-1}} rot={3*Math.PI/2 + theta}/>)
+      boxes.push(<StandardBox analyzer={this.state.analyzer} width={spread} height={height} position={[x,y,-10]} color={this.getColor(i, bins)} freqRange={{start: binWidth*i, end: binWidth*i+binWidth-1}} rot={Math.PI + theta + (Math.PI/2)*extraRot}/>)
     }
     return (
       <>
@@ -1077,7 +1076,10 @@ export default class App extends React.Component<any, any> {
         return this.standard(spread, offset, param1, param2);
       }
       case "standardRing": { 
-        return this.standardRing(spread, offset, param1, param2);
+        return this.standardRing(spread, offset, param1, param2, 1);
+      }
+      case "foldingRing": { 
+        return this.standardRing(spread, offset, param1, param2, 0);
       }
       case "horizontalLines": { 
         return this.horizontalLines(spread, offset);
@@ -1199,6 +1201,7 @@ export default class App extends React.Component<any, any> {
     const visOptions = [
       { value: 'standard', label: 'Standard' },
       { value: 'standardRing', label: 'Circular' },
+      { value: 'foldingRing', label: 'Folding' },
       { value: 'horizontalLines', label: 'Horizontal Lines' },
       { value: 'verticalLines', label: 'Vertical Lines' },
       { value: 'circular', label: 'Circles' },

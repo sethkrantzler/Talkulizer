@@ -4,9 +4,9 @@ Hello! My name is Seth, I love to talk. I have a [YouTube](https://www.youtube.c
 
 HOW TO USE
 
-1. run npm install to install dependencies
-2. run npm start in a command prompt
-3. run json-server --watch presetDb.json --port 3001 in another command prompt
+1. run `npm install` to install dependencies
+2. run `npm start` in a command prompt
+3. run `npm run server`
 
 
 TO DO
