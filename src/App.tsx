@@ -68,7 +68,9 @@ function StandardBox(props: any) {
       <mesh
         ref={lineRef}
         {...props}
-        scale={[1.0*props.width, 1, 0]}>
+        scale={[1.0*props.width, 1, 0]}
+        rotation={[0,0, !!props.rot ? props.rot : 0]}
+      >
         <boxGeometry ref={geoRef} attach="geometry" />
         <meshBasicMaterial color={props.color} />
       </mesh>
@@ -906,6 +908,24 @@ export default class App extends React.Component<any, any> {
     )
   }
 
+  standardRing(height: number, spread: number, bins: number, radius: number) {
+    let binWidth = Math.floor(1024/bins);
+    let boxes = [];
+    for (let i=0; i<bins; i++){
+      let boxWidth = 1;
+      let theta = i*Math.PI*2/bins;
+      let x = radius*Math.cos(theta);
+      let y = radius*Math.sin(theta);
+      boxes.push(<StandardBox analyzer={this.state.analyzer} width={boxWidth} height={height} position={[x,y,-10]} color={this.getColor(i, bins)} freqRange={{start: binWidth*i, end: binWidth*i+binWidth-1}} rot={3*Math.PI/2 + theta}/>)
+    }
+    return (
+      <>
+        {boxes}
+      </>
+      
+    )
+  }
+
   horizontalLines(offset: number, spread: number) {
     return (
       <>
@@ -1056,6 +1076,9 @@ export default class App extends React.Component<any, any> {
       case "standard": { 
         return this.standard(spread, offset, param1, param2);
       }
+      case "standardRing": { 
+        return this.standardRing(spread, offset, param1, param2);
+      }
       case "horizontalLines": { 
         return this.horizontalLines(spread, offset);
       }
@@ -1175,6 +1198,7 @@ export default class App extends React.Component<any, any> {
 
     const visOptions = [
       { value: 'standard', label: 'Standard' },
+      { value: 'standardRing', label: 'Circular' },
       { value: 'horizontalLines', label: 'Horizontal Lines' },
       { value: 'verticalLines', label: 'Vertical Lines' },
       { value: 'circular', label: 'Circles' },

@@ -689,6 +689,16 @@
       "param1": 36,
       "param2": 0.2,
       "id": 70
+    },
+    {
+      "presetName": "PaintSwatch",
+      "visualizerType": "standardRing",
+      "colorIndex": 0,
+      "spread": 14.5,
+      "offset": 1,
+      "param1": 56,
+      "param2": 1.8,
+      "id": 71
     }
   ]
 }
