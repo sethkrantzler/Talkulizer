@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useResource, useThree, useUpdate } from 'react-three-fiber';
 import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeometry, Geometry, LineBasicMaterial, Mesh, Points, Scene, Vector2, DoubleSide, CubicBezierCurve3, Vector3, QuadraticBezierCurve3} from 'three';
 import './App.css';
-import { Input, MenuItem, Select, TextField, Slider, Button } from '@material-ui/core';
+import { Input, MenuItem, Select, TextField, Slider, Button, InputLabel, FormControl } from '@material-ui/core';
 import { ColorPalettes } from './ColorPalette';
 import axios from 'axios';
 import { calculateVectorBetweenVectors, vectorToAngle } from './MathUtils';
@@ -835,7 +835,7 @@ export default class App extends React.Component<any, any> {
       window.location.hostname.match(
           /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
       )
-  );
+    );
   }
 
   componentDidMount(){
@@ -858,11 +858,15 @@ export default class App extends React.Component<any, any> {
           return response.json();
         })
         .then((json) => {
-          this.setState({presets: json.presets})
+          this.setState({presets: json.presets});
+          this.onPresetSelected({target: {value: 0}});
         });
     }
     else {
-      axios.get(this.dbUrl).then((resp) => this.setState({presets: resp.data}));
+      axios.get(this.dbUrl).then((resp) => {
+        this.setState({presets: resp.data});
+        this.onPresetSelected({target: {value: 0}});
+      });
     }
   }
 
@@ -1186,6 +1190,7 @@ export default class App extends React.Component<any, any> {
   }
 
   onPresetSelected = (e: any) => {
+    console.log(e);
     let selectedPreset = this.state.presets[e.target.value];
     this.setState({ visualizerType: selectedPreset.visualizerType,
       colorIndex: selectedPreset.colorIndex,
@@ -1226,25 +1231,39 @@ export default class App extends React.Component<any, any> {
       <>
         <div id="uiContainer">
           <div id="selectContainer">
-            <Select id="visualizerType"
-                value={this.state.visualizerType}
-                variant="outlined"
-                onChange={this.visualizerChanged}>
-                  {visOptions.map((o) => <MenuItem value={o.value}>{o.label}</MenuItem>)}
-            </Select>
-            <Select id="paletteType"
+            <FormControl>
+              <InputLabel className='label'>
+                Visual
+              </InputLabel>
+              <Select id="visualizerType"
+                  value={this.state.visualizerType}
+                  variant="outlined"
+                  onChange={this.visualizerChanged}>
+                    {visOptions.map((o) => <MenuItem value={o.value}>{o.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel className='label'>
+                Color Palette
+              </InputLabel>
+              <Select id="paletteType"
                 value={this.state.colorIndex}
                 variant="outlined"
                 onChange={this.paletteChanged}>
                   {ColorPalettes.map((p, index) => <MenuItem value={index}>{p.name}</MenuItem>)}
-            </Select>
-            <Select id="selectedPreset"
-                value={this.state.selectedPreset}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel className='label'>
+                Preset
+              </InputLabel>
+              <Select id="selectedPreset"
                 label="Selected Preset"
                 variant="outlined"
                 onChange={this.onPresetSelected}>
                   {this.state.presets.map((p: Preset, index: any) => <MenuItem value={index}>{p.presetName}</MenuItem>)}
-            </Select>
+              </Select>
+            </FormControl>
             {this.isLocalHost && 
             <>
             <TextField id="presetName"

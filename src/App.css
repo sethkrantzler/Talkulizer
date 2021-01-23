@@ -16,11 +16,18 @@ html{
 
 #paletteType{
   color: white;
+  min-width: 80px;
 }
 
 #presetName{
   color: white;
   width: 50%;
+}
+
+.label{
+  padding: 0 16px !important;
+  color: #8dcaff !important;
+  width: 100% !important;
 }
 
 #selectedPreset{
