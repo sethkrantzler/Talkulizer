@@ -679,6 +679,136 @@
       "param1": 2,
       "param2": 0.2,
       "id": 69
+    },
+    {
+      "presetName": "Standard_36",
+      "visualizerType": "standard",
+      "colorIndex": 0,
+      "spread": 16.5,
+      "offset": 1.3,
+      "param1": 36,
+      "param2": 0.2,
+      "id": 70
+    },
+    {
+      "presetName": "PaintSwatch",
+      "visualizerType": "standardRing",
+      "colorIndex": 0,
+      "spread": 14.5,
+      "offset": 1,
+      "param1": 56,
+      "param2": 1.8,
+      "id": 71
+    },
+    {
+      "presetName": "Color Tornado",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 14.5,
+      "offset": 1,
+      "param1": 56,
+      "param2": 1.8,
+      "id": 72
+    },
+    {
+      "presetName": "Post Its",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 11.5,
+      "offset": 11,
+      "param1": 25,
+      "param2": 1.1,
+      "id": 73
+    },
+    {
+      "presetName": "Fiber Optic",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 86.5,
+      "offset": 0.2,
+      "param1": 25,
+      "param2": 1.1,
+      "id": 74
+    },
+    {
+      "presetName": "Spicy P",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 13.5,
+      "offset": 1.1,
+      "param1": 25,
+      "param2": 1.1,
+      "id": 75
+    },
+    {
+      "presetName": "Art Deco",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 11.5,
+      "offset": 11,
+      "param1": 4,
+      "param2": 1.1,
+      "id": 76
+    },
+    {
+      "presetName": "*69",
+      "visualizerType": "standardRing",
+      "colorIndex": 0,
+      "spread": 10,
+      "offset": 11,
+      "param1": 6,
+      "param2": 0.9,
+      "id": 77
+    },
+    {
+      "presetName": "Frank's Clock",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 10,
+      "offset": 11,
+      "param1": 8,
+      "param2": 1.6,
+      "id": 78
+    },
+    {
+      "presetName": "Blackhole",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 573.5,
+      "offset": 0.1,
+      "param1": 100,
+      "param2": 1.6,
+      "id": 79
+    },
+    {
+      "presetName": "Anti-Matter",
+      "visualizerType": "foldingRing",
+      "colorIndex": 0,
+      "spread": 8.5,
+      "offset": 0.1,
+      "param1": 100,
+      "param2": 1.6,
+      "id": 80
+    },
+    {
+      "presetName": "Minnesota Wild",
+      "visualizerType": "noise",
+      "colorIndex": 5,
+      "spread": 95,
+      "offset": 1.1,
+      "param1": 100,
+      "param2": 1.1,
+      "id": 81
+    },
+    {
+      "presetName": "Peco",
+      "visualizerType": "noise",
+      "colorIndex": 6,
+      "spread": 61.5,
+      "offset": 0.8,
+      "param1": 100,
+      "param2": 0.7,
+      "id": 82
     }
   ]
 }
