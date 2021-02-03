@@ -29,21 +29,22 @@ html{
 
 #sliderContainer{
   color: white;
-  width: 40%;
+  width: 45%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  margin-top: 40px;
+  margin-top: 40px !important;
   margin-right: 20px;
 }
 
 #selectContainer{
   color: white;
-  width: 40%;
+  width: 45%;
   display: flex;
   align-items: center;
   flex-direction: row;
 }
+
 #uiContainer{
   color: white;
   width: 100%;
@@ -51,6 +52,18 @@ html{
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
+}
+
+#uiContainer div {
+  margin: 5px;
+}
+
+#uiContainer .MuiOutlinedInput-input{
+  border-color: white;
+}
+
+#uiContainer button {
+  margin: 5px;
 }
 
 #spread{

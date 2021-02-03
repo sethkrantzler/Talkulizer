@@ -825,7 +825,7 @@ export default class App extends React.Component<any, any> {
       param2: 0.2,
       colorIndex: 0,
       presetName: "",
-      presetSelected: "",
+      selectedPreset: 0,
       presets: []
     };
     this.dbUrl = "http://localhost:3001/presets";
@@ -858,11 +858,15 @@ export default class App extends React.Component<any, any> {
           return response.json();
         })
         .then((json) => {
-          this.setState({presets: json.presets})
+          this.setState({presets: json.presets});
+          this.randomPreset();
         });
     }
     else {
-      axios.get(this.dbUrl).then((resp) => this.setState({presets: resp.data}));
+      axios.get(this.dbUrl).then((resp) => {
+        this.setState({presets: resp.data})
+        this.randomPreset();
+      });
     }
   }
 
@@ -1185,6 +1189,10 @@ export default class App extends React.Component<any, any> {
     }).catch((err) => console.log(err));
   }
 
+  randomPreset = () => {
+    this.onPresetSelected({target: { value: Math.floor(Math.random()*this.state.presets.length)}});
+  }
+
   onPresetSelected = (e: any) => {
     let selectedPreset = this.state.presets[e.target.value];
     this.setState({ visualizerType: selectedPreset.visualizerType,
@@ -1192,7 +1200,8 @@ export default class App extends React.Component<any, any> {
       spread: selectedPreset.spread,
       offset: selectedPreset.offset,
       param1: selectedPreset.param1,
-      param2: selectedPreset.param2
+      param2: selectedPreset.param2,
+      selectedPreset: e.target.value
     });
   }
 
@@ -1257,6 +1266,9 @@ export default class App extends React.Component<any, any> {
               Save
             </Button>
             </>}
+            <Button onClick={this.randomPreset} variant="contained">
+              Random
+            </Button>
           </div>
           <div id="sliderContainer">
             <Slider
