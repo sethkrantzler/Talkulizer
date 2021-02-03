@@ -819,6 +819,16 @@
       "param1": 88,
       "param2": 0.2,
       "id": 83
+    },
+    {
+      "presetName": "Texas Sun",
+      "visualizerType": "fractal",
+      "colorIndex": 4,
+      "spread": 143.5,
+      "offset": 4.8,
+      "param1": 43,
+      "param2": 3,
+      "id": 84
     }
   ]
 }

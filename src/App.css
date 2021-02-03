@@ -21,6 +21,7 @@ html{
 
 #presetName{
   color: white;
+  min-width: 100px;
   width: 50%;
 }
 
@@ -32,6 +33,7 @@ html{
 
 #selectedPreset{
   color: white;
+  min-width: 150px;
 }
 
 #sliderContainer{
@@ -41,12 +43,12 @@ html{
   align-items: center;
   flex-direction: column;
   margin-top: 40px !important;
-  margin-right: 20px;
+  padding-right: 12px;
 }
 
 #selectContainer{
   color: white;
-  width: 45%;
+  width: 50%;
   display: flex;
   align-items: center;
   flex-direction: row;

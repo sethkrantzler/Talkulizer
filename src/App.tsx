@@ -842,12 +842,12 @@ export default class App extends React.Component<any, any> {
     navigator.mediaDevices.getUserMedia({audio: true })
       .then(this.handleAudio)
       .catch(this.audioError);
-    this.fetchPresets();
+    this.fetchPresets().then(this.randomPreset);
   }
 
   fetchPresets(){
     if (!this.isLocalHost){
-      fetch('presetDb.json', {
+      return fetch('presetDb.json', {
         headers : { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -859,13 +859,11 @@ export default class App extends React.Component<any, any> {
         })
         .then((json) => {
           this.setState({presets: json.presets});
-          this.randomPreset();
         });
     }
     else {
-      axios.get(this.dbUrl).then((resp) => {
+      return axios.get(this.dbUrl).then((resp) => {
         this.setState({presets: resp.data})
-        this.randomPreset();
       });
     }
   }
@@ -1264,6 +1262,7 @@ export default class App extends React.Component<any, any> {
               </InputLabel>
               <Select id="selectedPreset"
                 label="Selected Preset"
+                value={this.state.selectedPreset}
                 variant="outlined"
                 onChange={this.onPresetSelected}>
                   {this.state.presets.map((p: Preset, index: any) => <MenuItem value={index}>{p.presetName}</MenuItem>)}
