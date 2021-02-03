@@ -811,16 +811,6 @@
       "id": 82
     },
     {
-      "presetName": "",
-      "visualizerType": "slide",
-      "colorIndex": 6,
-      "spread": 171.5,
-      "offset": 7.4,
-      "param1": 88,
-      "param2": 0.2,
-      "id": 83
-    },
-    {
       "presetName": "Texas Sun",
       "visualizerType": "fractal",
       "colorIndex": 4,
@@ -828,7 +818,7 @@
       "offset": 4.8,
       "param1": 43,
       "param2": 3,
-      "id": 84
+      "id": 83
     }
   ]
 }

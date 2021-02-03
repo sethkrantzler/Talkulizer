@@ -1276,7 +1276,7 @@ export default class App extends React.Component<any, any> {
                 variant="outlined"
                 onChange={this.presetNameChanged} 
             />
-            <Button onClick={this.onSavePreset} variant="contained">
+            <Button id="savePreset" onClick={this.onSavePreset} disabled={this.state.presetName === ""} variant="contained">
               Save
             </Button>
             </>}

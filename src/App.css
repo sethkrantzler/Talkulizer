@@ -25,6 +25,11 @@ html{
   width: 50%;
 }
 
+#savePreset:disabled{
+  background-color: lightcoral;
+  color: rgb(41 41 41);
+}
+
 .label{
   padding: 0 16px !important;
   color: #8dcaff !important;
