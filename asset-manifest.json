@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/Talkulizer/static/css/main.794740de.chunk.css",
+    "main.css": "/Talkulizer/static/css/main.1e96db25.chunk.css",
     "main.js": "/Talkulizer/static/js/main.6b53867f.chunk.js",
     "main.js.map": "/Talkulizer/static/js/main.6b53867f.chunk.js.map",
     "runtime-main.js": "/Talkulizer/static/js/runtime-main.a5156ea4.js",
@@ -10,13 +10,13 @@
     "static/js/3.dba0b6d2.chunk.js": "/Talkulizer/static/js/3.dba0b6d2.chunk.js",
     "static/js/3.dba0b6d2.chunk.js.map": "/Talkulizer/static/js/3.dba0b6d2.chunk.js.map",
     "index.html": "/Talkulizer/index.html",
-    "static/css/main.794740de.chunk.css.map": "/Talkulizer/static/css/main.794740de.chunk.css.map",
+    "static/css/main.1e96db25.chunk.css.map": "/Talkulizer/static/css/main.1e96db25.chunk.css.map",
     "static/js/2.ea5de62c.chunk.js.LICENSE.txt": "/Talkulizer/static/js/2.ea5de62c.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.a5156ea4.js",
     "static/js/2.ea5de62c.chunk.js",
-    "static/css/main.794740de.chunk.css",
+    "static/css/main.1e96db25.chunk.css",
     "static/js/main.6b53867f.chunk.js"
   ]
 }
