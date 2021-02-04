@@ -1440,7 +1440,7 @@ export default class App extends React.Component<any, any> {
                   step={1}
                   min={1}
                   max={100}
-                  valueLabelDisplay="on"
+                  valueLabelDisplay="auto"
                   onChange={this.param1Changed}
                 />
               </FormControl>
@@ -1454,7 +1454,7 @@ export default class App extends React.Component<any, any> {
                   step={0.1}
                   min={0}
                   max={3}
-                  valueLabelDisplay="on"
+                  valueLabelDisplay="auto"
                   onChange={this.param2Changed}
                 />
               </FormControl>  
@@ -1470,7 +1470,7 @@ export default class App extends React.Component<any, any> {
                   step={0.5}
                   min={0}
                   max={1000}
-                  valueLabelDisplay="on"
+                  valueLabelDisplay="auto"
                   onChange={this.spreadChanged}
                 />
               </FormControl>
@@ -1484,7 +1484,7 @@ export default class App extends React.Component<any, any> {
                   step={0.1}
                   min={0}
                   max={20}
-                  valueLabelDisplay="on"
+                  valueLabelDisplay="auto"
                   onChange={this.offsetChanged}
                 />
               </FormControl>   
