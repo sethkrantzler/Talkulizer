@@ -7,11 +7,19 @@ import { Input, MenuItem, Select, TextField, Slider, Button, InputLabel, FormCon
 import { ColorPalettes } from './ColorPalette';
 import axios from 'axios';
 import { calculateVectorBetweenVectors, vectorToAngle } from './MathUtils';
+import { Dictionary } from 'ts-json-db/dist/src';
 
 interface FrequencyRange {
   start: number;
   end: number;
   color?: string;
+}
+
+interface SliderOptions{
+  param1: string;
+  param2: string;
+  offset: string;
+  spread: string;
 }
 
 interface Preset {
@@ -813,6 +821,134 @@ function Wire(props: any) {
 export default class App extends React.Component<any, any> {
   private dbUrl: string;
   private isLocalHost: Boolean;
+  private sliderLabels: Record<string, SliderOptions> = {
+    'standard': {
+      param1: 'Bars',
+      param2: '',
+      offset: 'Spread',
+      spread: 'Height',
+    },
+    'standardRing': {
+      param1: 'Bars',
+      param2: 'Radius',
+      offset: 'Spread',
+      spread: 'Height',
+    },
+    'foldingRing': {
+      param1: 'Bars',
+      param2: 'Radius',
+      offset: 'Spread',
+      spread: 'Height',
+    },
+    'horizontalLines': {
+      param1: '',
+      param2: '',
+      offset: 'Offset',
+      spread: 'Spread',
+    },
+    'verticalLines': {
+      param1: '',
+      param2: '',
+      offset: 'Offset',
+      spread: 'Spread',
+    },
+    'circular': {
+      param1: 'n',
+      param2: 'Radius',
+      offset: '',
+      spread: '',
+    },
+    'bolt': {
+      param1: '',
+      param2: '',
+      offset: '',
+      spread: '',
+    },
+    'rings': {
+      param1: 'n',
+      param2: 'Radius',
+      offset: '',
+      spread: '',
+    },
+    'fractal': {
+      param1: 'n',
+      param2: 'Radius',
+      offset: '',
+      spread: '',
+    },
+    'solid': {
+      param1: '',
+      param2: '',
+      offset: '',
+      spread: '',
+    },
+    'cube': {
+      param1: '',
+      param2: '',
+      offset: '',
+      spread: '',
+    },
+    'wires': {
+      param1: '',
+      param2: '',
+      offset: '',
+      spread: 'Spread',
+    },
+    'flat': {
+      param1: '',
+      param2: '',
+      offset: '',
+      spread: 'Spread',
+    },
+    'racecar': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'trails': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'slide': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'noise': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'racecar_off': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'trails_off': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'slide_off': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    },
+    'noise_off': {
+      param1: 'n',
+      param2: 'Scale',
+      offset: 'Path',
+      spread: 'Speed',
+    }
+  };
 
   constructor(props: any) {
     super(props);
@@ -1230,6 +1366,14 @@ export default class App extends React.Component<any, any> {
       { value: 'noise_off', label: 'Static' }
     ];
 
+    // 'standard': {
+    //   param1: '',
+    //   param2: '',
+    //   offset: '',
+    //   spread: '',
+    // }
+
+
     return (
       <>
         <div id="uiContainer">
@@ -1285,42 +1429,66 @@ export default class App extends React.Component<any, any> {
             </>}
           </div>
           <div id="sliderContainer">
-            <Slider
-              defaultValue={10}
-              value={this.state.param1}
-              step={1}
-              min={1}
-              max={100}
-              valueLabelDisplay="on"
-              onChange={this.param1Changed}
-            />
-            <Slider
-              defaultValue={0.2}
-              value={this.state.param2}
-              step={0.1}
-              min={0}
-              max={3}
-              valueLabelDisplay="on"
-              onChange={this.param2Changed}
-            />
-             <Slider
-              defaultValue={10}
-              value={this.state.spread}
-              step={0.5}
-              min={0}
-              max={1000}
-              valueLabelDisplay="on"
-              onChange={this.spreadChanged}
-            />
-            <Slider
-              defaultValue={0.2}
-              value={this.state.offset}
-              step={0.1}
-              min={0}
-              max={20}
-              valueLabelDisplay="on"
-              onChange={this.offsetChanged}
-            />
+            <div id="sliderContainer">
+              <FormControl>
+                <InputLabel className='label'>
+                  {this.sliderLabels[this.state.visualizerType].param1}
+                </InputLabel>
+                <Slider
+                  defaultValue={10}
+                  value={this.state.param1}
+                  step={1}
+                  min={1}
+                  max={100}
+                  valueLabelDisplay="on"
+                  onChange={this.param1Changed}
+                />
+              </FormControl>
+              <FormControl>
+                <InputLabel className='label'>
+                  {this.sliderLabels[this.state.visualizerType].param2}
+                </InputLabel>
+                <Slider
+                  defaultValue={0.2}
+                  value={this.state.param2}
+                  step={0.1}
+                  min={0}
+                  max={3}
+                  valueLabelDisplay="on"
+                  onChange={this.param2Changed}
+                />
+              </FormControl>  
+            </div>
+            <div id="sliderContainer">
+              <FormControl>
+                <InputLabel className='label'>
+                  {this.sliderLabels[this.state.visualizerType].spread}
+                </InputLabel>
+                <Slider
+                  defaultValue={10}
+                  value={this.state.spread}
+                  step={0.5}
+                  min={0}
+                  max={1000}
+                  valueLabelDisplay="on"
+                  onChange={this.spreadChanged}
+                />
+              </FormControl>
+              <FormControl>
+                <InputLabel className='label'>
+                  {this.sliderLabels[this.state.visualizerType].offset}
+                </InputLabel>
+                <Slider
+                  defaultValue={0.2}
+                  value={this.state.offset}
+                  step={0.1}
+                  min={0}
+                  max={20}
+                  valueLabelDisplay="on"
+                  onChange={this.offsetChanged}
+                />
+              </FormControl>   
+            </div>
           </div>
         </div>
         <Canvas className={'App'}>

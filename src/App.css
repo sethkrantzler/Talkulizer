@@ -45,10 +45,21 @@ html{
   color: white;
   width: 45%;
   display: flex;
-  align-items: center;
   flex-direction: column;
-  margin-top: 40px !important;
+  margin-top: 20px !important;
   padding-right: 12px;
+}
+
+#sliderContainer .MuiInputLabel-formControl{
+  top: 0;
+  left: -15px;
+  position: absolute;
+  transform: translate(0, -11px) scale(1);
+}
+
+#sliderContainer > div{
+  width: 100%;
+  flex-direction: row;
 }
 
 #selectContainer{
