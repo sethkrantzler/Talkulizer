@@ -962,7 +962,8 @@ export default class App extends React.Component<any, any> {
       colorIndex: 0,
       presetName: "",
       selectedPreset: 0,
-      presets: []
+      presets: [],
+      sourceOptions: []
     };
     this.dbUrl = "http://localhost:3001/presets";
     this.isLocalHost  = Boolean(
@@ -975,10 +976,28 @@ export default class App extends React.Component<any, any> {
   }
 
   componentDidMount(){
-    navigator.mediaDevices.getUserMedia({audio: true })
+    if (window.confirm("Welcome to the @SethLovesToTalk Visualizer! If you'd like to use an audio output with the visualizer press 'OK' then make sure you click 'Entire Screen' and Check the 'Share Audio' box, if you'd like to use your Microphone then press 'Cancel'")) {
+      let speaker = new MediaStream;
+      const mediaDevices = navigator.mediaDevices as any;
+      mediaDevices.getDisplayMedia({
+          video: true ,
+          audio: true
+      }).then((stream: MediaStream) => {
+          this.fetchPresets().then(this.randomPreset);
+          speaker.addTrack(stream.getAudioTracks()[0].clone());
+          // stopping and removing the video track to enhance the performance
+          stream.getVideoTracks()[0].stop();
+          stream.removeTrack(stream.getVideoTracks()[0]);
+          this.handleAudio(speaker);
+      }).catch(() => {
+          console.error('failed')
+      });
+    } else {
+      navigator.mediaDevices.getUserMedia({audio: true })
       .then(this.handleAudio)
       .catch(this.audioError);
-    this.fetchPresets().then(this.randomPreset);
+      this.fetchPresets().then(this.randomPreset);
+    }
   }
 
   fetchPresets(){
@@ -1005,6 +1024,7 @@ export default class App extends React.Component<any, any> {
   }
 
   initializeAudioAnalyser = (stream: MediaStream) => {
+    console.log("stream:"+ stream);
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
