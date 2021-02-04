@@ -819,6 +819,16 @@
       "param1": 43,
       "param2": 3,
       "id": 83
+    },
+    {
+      "presetName": "Shoo Fly Eye",
+      "visualizerType": "fractal",
+      "colorIndex": 5,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 2,
+      "param2": 0.5,
+      "id": 84
     }
   ]
 }
