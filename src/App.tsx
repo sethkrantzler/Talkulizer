@@ -843,14 +843,14 @@ export default class App extends React.Component<any, any> {
     'horizontalLines': {
       param1: '',
       param2: '',
-      offset: 'Offset',
-      spread: 'Spread',
+      offset: 'Spread',
+      spread: 'Offset',
     },
     'verticalLines': {
       param1: '',
       param2: '',
-      offset: 'Offset',
-      spread: 'Spread',
+      offset: 'Spread',
+      spread: 'Offset',
     },
     'circular': {
       param1: 'n',
