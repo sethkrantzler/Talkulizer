@@ -1234,6 +1234,9 @@ export default class App extends React.Component<any, any> {
       <>
         <div id="uiContainer">
           <div id="selectContainer">
+            <Button onClick={this.randomPreset} variant="contained">
+              Random
+            </Button>
             <FormControl>
               <InputLabel className='label'>
                 Visual
@@ -1280,9 +1283,6 @@ export default class App extends React.Component<any, any> {
               Save
             </Button>
             </>}
-            <Button onClick={this.randomPreset} variant="contained">
-              Random
-            </Button>
           </div>
           <div id="sliderContainer">
             <Slider
