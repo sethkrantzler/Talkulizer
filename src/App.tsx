@@ -87,6 +87,59 @@ function StandardBox(props: any) {
   );
 }
 
+function WaveformLine(props: any) {
+  const geoRef = useRef<any>(null);
+  const lineRef = useRef<any>(null);
+
+  let bufferLength = 0;
+  let amplitudeArray = new Uint8Array(0);
+
+  // Initialize vertices
+  const linePoints: Vector2[] = [];
+  const lineSegments = 2048;
+  const size = 12.0;
+
+  for (let i = 0; i < lineSegments; i++) {
+    linePoints.push(new Vector2(size/2 + (-2*size*i/lineSegments), 0));
+  }
+
+  useEffect(()=> {
+    if (!!props.analyzer && bufferLength == 0) {
+      bufferLength = props.analyzer.frequencyBinCount;
+      amplitudeArray = new Uint8Array(bufferLength);
+      props.analyzer.getByteTimeDomainData(amplitudeArray);
+    }
+  });
+
+  function graphFrequencyData(points: Vector2[], freqData: Uint8Array) {
+    for (let i = 0; i < points.length; i++) {
+      points[i].y = (freqData[i]-128.0)* props.height / 128.0;
+    }
+    return points;
+  }
+
+
+  useFrame(() => {
+    if (geoRef && geoRef.current && !!props.analyzer && amplitudeArray) {
+      props.analyzer.getByteTimeDomainData(amplitudeArray);
+      geoRef.current.setFromPoints(graphFrequencyData(linePoints, amplitudeArray));
+    }
+  });
+  
+
+  return (
+    <line
+      ref={lineRef}
+      {...props}
+      scale={[1, 1, 1]}>
+      <bufferGeometry ref={geoRef} attach="geometry" />
+      <lineBasicMaterial color={props.color} />
+    </line>
+  );
+}
+
+
+
 function HorizontalLine(props: any) {
   const geoRef = useRef<any>(null);
   const lineRef = useRef<any>(null);
@@ -828,6 +881,12 @@ export default class App extends React.Component<any, any> {
       offset: 'Spread',
       spread: 'Height',
     },
+    'waveform': {
+      param1: '',
+      param2: '',
+      offset: '',
+      spread: '',
+    },
     'standardRing': {
       param1: 'Bars',
       param2: 'Radius',
@@ -976,7 +1035,7 @@ export default class App extends React.Component<any, any> {
   }
 
   componentDidMount(){
-    if (window.confirm("Welcome to the @SethLovesToTalk Visualizer! If you'd like to use an audio output with the visualizer press 'OK' then make sure you click 'Entire Screen' and Check the 'Share Audio' box, if you'd like to use your Microphone then press 'Cancel'")) {
+    if (window.confirm("Welcome to the @SethLovesToTalk Visualizer! If you'd like to use an audio output with the visualizer press 'OK' then make sure you click 'Entire Screen' and Check the 'Share Audio' box (You can only share a chrome tab's audio on MacOS unfortunately), if you'd like to use your Microphone then press 'Cancel'")) {
       let speaker = new MediaStream;
       const mediaDevices = navigator.mediaDevices as any;
       mediaDevices.getDisplayMedia({
@@ -1024,7 +1083,6 @@ export default class App extends React.Component<any, any> {
   }
 
   initializeAudioAnalyser = (stream: MediaStream) => {
-    console.log("stream:"+ stream);
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
@@ -1078,8 +1136,23 @@ export default class App extends React.Component<any, any> {
     return (
       <>
         {boxes}
-      </>
-      
+      </>    
+    )
+  }
+
+  waveform(fidelity: number, height: number, bins: number, z: number) {
+    let lines = [];
+    const yMax = 2;
+    height = height > 0 ? height*2 : 0.1;
+    for (let i=0; i<bins; i++){
+      let y = - (yMax+(yMax/bins)) + (2*yMax/bins)*(i+1);
+      console.log(y);
+      lines.push(<WaveformLine analyzer={this.state.analyzer} position={[0,y,-z]} color={this.getColor(i, bins)} height={height} />);
+    };
+    return (
+      <>
+        {lines}
+      </>    
     )
   }
 
@@ -1233,6 +1306,9 @@ export default class App extends React.Component<any, any> {
       case "standard": { 
         return this.standard(spread, offset, param1, param2);
       }
+      case "waveform": { 
+        return this.waveform(spread, offset, param1, param2);
+      }
       case "standardRing": { 
         return this.standardRing(spread, offset, param1, param2, 1);
       }
@@ -1348,7 +1424,6 @@ export default class App extends React.Component<any, any> {
   }
 
   onPresetSelected = (e: any) => {
-    console.log(e);
     let selectedPreset = this.state.presets[e.target.value];
     this.setState({ visualizerType: selectedPreset.visualizerType,
       colorIndex: selectedPreset.colorIndex,
@@ -1364,6 +1439,7 @@ export default class App extends React.Component<any, any> {
 
     const visOptions = [
       { value: 'standard', label: 'Standard' },
+      { value: 'waveform', label: 'Waveform' },
       { value: 'standardRing', label: 'Circular' },
       { value: 'foldingRing', label: 'Folding' },
       { value: 'horizontalLines', label: 'Horizontal Lines' },
@@ -1385,14 +1461,6 @@ export default class App extends React.Component<any, any> {
       { value: 'noise', label: 'Noise' },
       { value: 'noise_off', label: 'Static' }
     ];
-
-    // 'standard': {
-    //   param1: '',
-    //   param2: '',
-    //   offset: '',
-    //   spread: '',
-    // }
-
 
     return (
       <>

@@ -829,6 +829,56 @@
       "param1": 2,
       "param2": 0.5,
       "id": 84
+    },
+    {
+      "presetName": "Seismograph",
+      "visualizerType": "waveform",
+      "colorIndex": 4,
+      "spread": 25,
+      "offset": 1.5,
+      "param1": 20,
+      "param2": 3,
+      "id": 85
+    },
+    {
+      "presetName": "Oscilloscope",
+      "visualizerType": "waveform",
+      "colorIndex": 4,
+      "spread": 25,
+      "offset": 1.4,
+      "param1": 1,
+      "param2": 0,
+      "id": 86
+    },
+    {
+      "presetName": "Blocky Waves",
+      "visualizerType": "waveform",
+      "colorIndex": 4,
+      "spread": 0,
+      "offset": 1.5,
+      "param1": 17,
+      "param2": 0,
+      "id": 87
+    },
+    {
+      "presetName": "Radio Static",
+      "visualizerType": "waveform",
+      "colorIndex": 4,
+      "spread": 0,
+      "offset": 11.2,
+      "param1": 17,
+      "param2": 3,
+      "id": 88
+    },
+    {
+      "presetName": "Jawbreaker",
+      "visualizerType": "waveform",
+      "colorIndex": 4,
+      "spread": 0,
+      "offset": 0.4,
+      "param1": 80,
+      "param2": 3,
+      "id": 89
     }
   ]
 }
