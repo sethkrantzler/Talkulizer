@@ -6,6 +6,7 @@
   "dependencies": {
     "@craco/craco": "^6.0.0",
     "@material-ui/core": "^4.11.2",
+    "@react-three/drei": "^3.11.0",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.2.2",
@@ -21,7 +22,7 @@
     "react-three-fiber": "^5.3.3",
     "three": "^0.123.0",
     "ts-json-db": "^2.0.4",
-    "typescript": "^4.1.2",
+    "typescript": "^4.2.3",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

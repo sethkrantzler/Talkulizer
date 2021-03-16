@@ -1035,6 +1035,7 @@ export default class App extends React.Component<any, any> {
   }
 
   componentDidMount(){
+    document.addEventListener("keydown", this.onKeyPressed.bind(this));
     if (window.confirm("Welcome to the @SethLovesToTalk Visualizer! If you'd like to use an audio output with the visualizer press 'OK' then make sure you click 'Entire Screen' and Check the 'Share Audio' box (You can only share a chrome tab's audio on MacOS unfortunately), if you'd like to use your Microphone then press 'Cancel'")) {
       let speaker = new MediaStream;
       const mediaDevices = navigator.mediaDevices as any;
@@ -1056,6 +1057,20 @@ export default class App extends React.Component<any, any> {
       .then(this.handleAudio)
       .catch(this.audioError);
       this.fetchPresets().then(this.randomPreset);
+    }
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.onKeyPressed.bind(this));
+  }
+
+  onKeyPressed(e: any) {
+    switch(e.key.toLowerCase()){
+      case "r":
+        this.onPresetSelected({target: { value: Math.floor(Math.random()*this.state.presets.length)}});
+        break;
+      default:
+        break;
     }
   }
 
@@ -1579,7 +1594,7 @@ export default class App extends React.Component<any, any> {
             </div>
           </div>
         </div>
-        <Canvas className={'App'}>
+        <Canvas onKeyDown={this.onKeyPressed} className={'App'}>
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
           <pointLight position={[-10, -10, -10]} />
