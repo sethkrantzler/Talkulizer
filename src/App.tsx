@@ -1022,7 +1022,8 @@ export default class App extends React.Component<any, any> {
       presetName: "",
       selectedPreset: 0,
       presets: [],
-      sourceOptions: []
+      sourceOptions: [],
+      shouldCycle: false,
     };
     this.dbUrl = "http://localhost:3001/presets";
     this.isLocalHost  = Boolean(
@@ -1058,6 +1059,7 @@ export default class App extends React.Component<any, any> {
       .catch(this.audioError);
       this.fetchPresets().then(this.randomPreset);
     }
+    setInterval(this.randomCycle, 60000);
   }
 
   componentWillUnmount(){
@@ -1068,6 +1070,12 @@ export default class App extends React.Component<any, any> {
     switch(e.key.toLowerCase()){
       case "r":
         this.onPresetSelected({target: { value: Math.floor(Math.random()*this.state.presets.length)}});
+        this.showAlertText("Random Preset");
+        break;
+      case "c":
+        this.setState({shouldCycle: !this.state.shouldCycle});
+        let alertText = this.state.shouldCycle ? "Cycle (On)" : "Cycle (Off)";
+        this.showAlertText(alertText);
         break;
       default:
         break;
@@ -1095,6 +1103,18 @@ export default class App extends React.Component<any, any> {
         this.setState({presets: resp.data})
       });
     }
+  }
+
+  showAlertText(text: string){
+    let alertDiv = document.getElementById("alert-text");
+    let child = alertDiv.firstChild;
+    if (!!child){
+      alertDiv.removeChild(child)
+    }
+    let textDiv = document.createElement("div");
+    textDiv.className = "fade";
+    textDiv.innerHTML = text;
+    alertDiv.appendChild(textDiv);
   }
 
   initializeAudioAnalyser = (stream: MediaStream) => {
@@ -1450,6 +1470,12 @@ export default class App extends React.Component<any, any> {
     });
   }
 
+  randomCycle = () => {
+    if (this.state.shouldCycle){
+      this.randomPreset();
+    }
+  }
+
   render() {
 
     const visOptions = [
@@ -1593,11 +1619,10 @@ export default class App extends React.Component<any, any> {
               </FormControl>   
             </div>
           </div>
+          <div id="alert-text"></div>
         </div>
         <Canvas onKeyDown={this.onKeyPressed} className={'App'}>
           <ambientLight intensity={0.5} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-          <pointLight position={[-10, -10, -10]} />
           {this.renderVisualizer(this.state.visualizerType, this.state.spread, this.state.offset, this.state.param1, this.state.param2)}
         </Canvas>
       </>
