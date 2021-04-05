@@ -88,9 +88,28 @@ html{
   border-color: white;
 }
 
+#selectContainer .MuiInput-input{
+  color: white;
+}
+
+#colorPicker .makeStyles-root-1{
+  width: 100%;
+  height: auto;
+}
+
+#colorPicker .makeStyles-root-1 button{
+  top: 4px;
+  border: 15px white solid;
+}
+
+#colorPicker label {
+  top: -4px;
+}
+
 #uiContainer button {
   margin: 5px;
 }
+
 
 #spread{
   color: white;

@@ -8,6 +8,7 @@ import { ColorPalettes } from './ColorPalette';
 import axios from 'axios';
 import { calculateVectorBetweenVectors, vectorToAngle } from './MathUtils';
 import { Dictionary } from 'ts-json-db/dist/src';
+import { ColorPicker } from 'material-ui-color';
 
 interface FrequencyRange {
   start: number;
@@ -1024,6 +1025,7 @@ export default class App extends React.Component<any, any> {
       presets: [],
       sourceOptions: [],
       shouldCycle: false,
+      color: "#040d1b"
     };
     this.dbUrl = "http://localhost:3001/presets";
     this.isLocalHost  = Boolean(
@@ -1410,6 +1412,12 @@ export default class App extends React.Component<any, any> {
    } 
   }
 
+  backgroundChanged = (color: any) => {
+    const colorString = color.css?.backgroundColor || color;
+    document.getElementById("root").style.backgroundColor = colorString;
+    this.setState({color: colorString});
+  }
+
   visualizerChanged = (e: any) => {
     this.setState({visualizerType: e.target.value});
   }
@@ -1510,6 +1518,16 @@ export default class App extends React.Component<any, any> {
             <Button onClick={this.randomPreset} variant="contained">
               Random
             </Button>
+            <FormControl id="colorPicker">
+              <InputLabel className='label MuiFormLabel-root MuiInputLabel-root label MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled' id="colorPickerLabel">
+                Background
+              </InputLabel>
+              <ColorPicker
+                defaultValue={this.state.color}
+                value={this.state.color}
+                onChange={this.backgroundChanged}
+              />
+            </FormControl>
             <FormControl>
               <InputLabel className='label'>
                 Visual
@@ -1523,7 +1541,7 @@ export default class App extends React.Component<any, any> {
             </FormControl>
             <FormControl>
               <InputLabel className='label'>
-                Color Palette
+                Palette
               </InputLabel>
               <Select id="paletteType"
                 value={this.state.colorIndex}

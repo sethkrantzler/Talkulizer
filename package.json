@@ -16,6 +16,7 @@
     "@types/react-dom": "^17.0.0",
     "axios": "^0.21.1",
     "json-server": "^0.16.3",
+    "material-ui-color": "^1.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
