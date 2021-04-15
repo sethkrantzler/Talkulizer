@@ -883,9 +883,9 @@ export default class App extends React.Component<any, any> {
       spread: 'Height',
     },
     'waveform': {
-      param1: '',
-      param2: '',
-      offset: '',
+      param1: 'Lines',
+      param2: 'z',
+      offset: 'Height',
       spread: '',
     },
     'standardRing': {
@@ -1025,6 +1025,8 @@ export default class App extends React.Component<any, any> {
       presets: [],
       sourceOptions: [],
       shouldCycle: false,
+      cycleTime: 2000,
+      currentInterval: null,
       color: "#040d1b"
     };
     this.dbUrl = "http://localhost:3001/presets";
@@ -1061,7 +1063,6 @@ export default class App extends React.Component<any, any> {
       .catch(this.audioError);
       this.fetchPresets().then(this.randomPreset);
     }
-    setInterval(this.randomCycle, 60000);
   }
 
   componentWillUnmount(){
@@ -1076,12 +1077,75 @@ export default class App extends React.Component<any, any> {
         break;
       case "c":
         this.setState({shouldCycle: !this.state.shouldCycle});
-        let alertText = this.state.shouldCycle ? "Cycle (On)" : "Cycle (Off)";
+        let alertText = this.state.shouldCycle ? `Cycle (${this.state.cycleTime / 1000}s)` : "Cycle (Off)";
+        if (this.state.shouldCycle) {
+          this.setCycleInterval(this.state.cycleTime);
+        }
+        else {
+          this.clearCycleInterval();
+        }
         this.showAlertText(alertText);
+        break;
+      case "g":
+        this.backgroundChanged("#00ff00");
+        this.showAlertText("Green Background");
+        break;
+      case "b":
+        this.backgroundChanged("#0000ff");
+        this.showAlertText("Blue Background");
+        break;
+      case "h":
+        this.backgroundChanged(this.getColor(null, null));
+        this.showAlertText("Random Background");
+        break;
+      case "arrowup":
+        if (!this.state.shouldCycle){
+          break;
+        }
+        if (this.state.cycleTime < 1000){
+          this.setState({cycleTime: 1000});
+        }
+        else if (this.state.cycleTime >= 30000){
+          this.setState({cycleTime: this.state.cycleTime + 5000});
+        }
+        else {
+          this.setState({cycleTime: this.state.cycleTime + 1000});
+        }
+        this.setCycleInterval(this.state.cycleTime);
+        this.showAlertText(`Cycle (${this.state.cycleTime / 1000}s)`);
+        break;
+      case "arrowdown":
+        if (!this.state.shouldCycle){
+          break;
+        }
+        if (this.state.cycleTime <= 1000){
+          this.setState({cycleTime: 500});
+        }
+        else if (this.state.cycleTime >= 30000){
+          this.setState({cycleTime: this.state.cycleTime - 5000});
+        }
+        else {
+          this.setState({cycleTime: this.state.cycleTime - 1000});
+        }
+        this.setCycleInterval(this.state.cycleTime);
+        this.showAlertText(`Cycle (${this.state.cycleTime / 1000}s)`);
         break;
       default:
         break;
     }
+  }
+
+  clearCycleInterval(){
+    if (this.state.currentInterval) {
+      clearInterval(this.state.currentInterval);
+    }
+  }
+
+  setCycleInterval(cycleTime: number){
+    if (this.state.currentInterval) {
+      clearInterval(this.state.currentInterval);
+    }
+    this.setState({currentInterval: setInterval(this.randomPreset, cycleTime)});
   }
 
   fetchPresets(){
@@ -1183,7 +1247,6 @@ export default class App extends React.Component<any, any> {
     height = height > 0 ? height*2 : 0.1;
     for (let i=0; i<bins; i++){
       let y = - (yMax+(yMax/bins)) + (2*yMax/bins)*(i+1);
-      console.log(y);
       lines.push(<WaveformLine analyzer={this.state.analyzer} position={[0,y,-z]} color={this.getColor(i, bins)} height={height} />);
     };
     return (
