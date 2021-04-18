@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Talkulizer/static/css/main.75c9bb7e.chunk.css",
-    "main.js": "/Talkulizer/static/js/main.842b50f2.chunk.js",
-    "main.js.map": "/Talkulizer/static/js/main.842b50f2.chunk.js.map",
+    "main.js": "/Talkulizer/static/js/main.e66d5093.chunk.js",
+    "main.js.map": "/Talkulizer/static/js/main.e66d5093.chunk.js.map",
     "runtime-main.js": "/Talkulizer/static/js/runtime-main.2b19ec5c.js",
     "runtime-main.js.map": "/Talkulizer/static/js/runtime-main.2b19ec5c.js.map",
     "static/js/2.06247b20.chunk.js": "/Talkulizer/static/js/2.06247b20.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.2b19ec5c.js",
     "static/js/2.06247b20.chunk.js",
     "static/css/main.75c9bb7e.chunk.css",
-    "static/js/main.842b50f2.chunk.js"
+    "static/js/main.e66d5093.chunk.js"
   ]
 }
