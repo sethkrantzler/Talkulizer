@@ -1725,7 +1725,6 @@ export default class App extends React.Component<any, any> {
               </FormControl>   
             </div>
           </div>
-          <div id="alert-text"></div>
           <HelpDialog
             open={this.state.showHelp}
             close={() => this.setState({showHelp: false})}
@@ -1737,6 +1736,7 @@ export default class App extends React.Component<any, any> {
           <ambientLight intensity={0.5} />
           {this.renderVisualizer(this.state.visualizerType, this.state.spread, this.state.offset, this.state.param1, this.state.param2)}
         </Canvas>
+        <div id="alert-text"></div>
       </>
     )
   }

@@ -125,8 +125,9 @@ html{
 }
 
 #alert-text{
+  color: white;
   position: absolute;
-  top: 20%;
+  bottom: 5%;
   left: 3%;
   z-index: 2000;
 }
@@ -185,7 +186,7 @@ html{
 
 .fade {
   opacity: 0;
-  filter: drop-shadow(3px 3px 1px #2b2b2c);
+  filter: drop-shadow(3px 3px 1px #272727);
   animation: fade ease 4s forwards;
   -webkit-animation: fade ease 4s forwards;
   -moz-animation: fade ease 4s forwards;
