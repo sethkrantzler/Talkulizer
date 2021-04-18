@@ -3,12 +3,13 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useResource, useThree, useUpdate } from 'react-three-fiber';
 import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeometry, Geometry, LineBasicMaterial, Mesh, Points, Scene, Vector2, DoubleSide, CubicBezierCurve3, Vector3, QuadraticBezierCurve3} from 'three';
 import './App.css';
-import { Input, MenuItem, Select, TextField, Slider, Button, InputLabel, FormControl } from '@material-ui/core';
+import { Input, MenuItem, Select, TextField, Slider, Button, InputLabel, FormControl, Dialog } from '@material-ui/core';
 import { ColorPalettes } from './ColorPalette';
 import axios from 'axios';
 import { calculateVectorBetweenVectors, vectorToAngle } from './MathUtils';
 import { Dictionary } from 'ts-json-db/dist/src';
 import { ColorPicker } from 'material-ui-color';
+import HelpDialog from './HelpDialog';
 
 interface FrequencyRange {
   start: number;
@@ -1027,7 +1028,8 @@ export default class App extends React.Component<any, any> {
       shouldCycle: false,
       cycleTime: 2000,
       currentInterval: null,
-      color: "#040d1b"
+      color: "#040d1b",
+      showHelp: true
     };
     this.dbUrl = "http://localhost:3001/presets";
     this.isLocalHost  = Boolean(
@@ -1041,7 +1043,7 @@ export default class App extends React.Component<any, any> {
 
   componentDidMount(){
     document.addEventListener("keydown", this.onKeyPressed.bind(this));
-    if (window.confirm("Welcome to the @SethLovesToTalk Visualizer! If you'd like to use an audio output with the visualizer press 'OK' then make sure you click 'Entire Screen' and Check the 'Share Audio' box (You can only share a chrome tab's audio on MacOS unfortunately), if you'd like to use your Microphone then press 'Cancel'")) {
+    if (window.confirm("Welcome to the @SethLovesToTalk Audio Visualizer! Before we can start, you'll need to decide whether you want to use your microphone or your speakers as your audio input. \n\n Press 'Okay' to use your speakers, and 'Cancel' for your microphone. \n\n (NOTE: If using your speakers, a menu will pop up asking you to select your source. If on Windows, select any screen, and make sure the 'Share Audio' button in the bottom left is selected. On Mac, this option is only present from selecting a chrome tab, so any audio you want to visualize will need to come from that tab.")) {
       let speaker = new MediaStream;
       const mediaDevices = navigator.mediaDevices as any;
       mediaDevices.getDisplayMedia({
@@ -1547,8 +1549,11 @@ export default class App extends React.Component<any, any> {
     }
   }
 
-  render() {
+  helpClicked = () => {
+    this.setState({showHelp: !this.state.showHelp});
+  }
 
+  render() {
     const visOptions = [
       { value: 'standard', label: 'Standard' },
       { value: 'waveform', label: 'Waveform' },
@@ -1578,8 +1583,8 @@ export default class App extends React.Component<any, any> {
       <>
         <div id="uiContainer">
           <div id="selectContainer">
-            <Button onClick={this.randomPreset} variant="contained">
-              Random
+            <Button onClick={this.helpClicked} variant="contained">
+              ?
             </Button>
             <FormControl id="colorPicker">
               <InputLabel className='label MuiFormLabel-root MuiInputLabel-root label MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled' id="colorPickerLabel">
@@ -1625,6 +1630,9 @@ export default class App extends React.Component<any, any> {
                   {this.state.presets.map((p: Preset, index: any) => <MenuItem value={index}>{p.presetName}</MenuItem>)}
               </Select>
             </FormControl>
+            <Button onClick={this.randomPreset} variant="contained">
+              Random
+            </Button>
             {this.isLocalHost && 
             <>
             <TextField id="presetName"
@@ -1701,13 +1709,15 @@ export default class App extends React.Component<any, any> {
             </div>
           </div>
           <div id="alert-text"></div>
+          <HelpDialog
+            open={this.state.showHelp}
+            close={() => this.setState({showHelp: false})}  />
         </div>
         <Canvas onKeyDown={this.onKeyPressed} className={'App'}>
           <ambientLight intensity={0.5} />
           {this.renderVisualizer(this.state.visualizerType, this.state.spread, this.state.offset, this.state.param1, this.state.param2)}
         </Canvas>
       </>
-      
     )
   }
 }

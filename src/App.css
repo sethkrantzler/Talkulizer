@@ -43,7 +43,7 @@ html{
 
 #sliderContainer{
   color: white;
-  width: 45%;
+  width: 50%;
   display: flex;
   flex-direction: column;
   margin-top: 20px !important;
