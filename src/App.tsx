@@ -1043,28 +1043,6 @@ export default class App extends React.Component<any, any> {
 
   componentDidMount(){
     document.addEventListener("keydown", this.onKeyPressed.bind(this));
-    if (window.confirm("Welcome to the @SethLovesToTalk Audio Visualizer! Before we can start, you'll need to decide whether you want to use your microphone or your speakers as your audio input. \n\n Press 'Okay' to use your speakers, and 'Cancel' for your microphone. \n\n (NOTE: If using your speakers, a menu will pop up asking you to select your source. If on Windows, select any screen, and make sure the 'Share Audio' button in the bottom left is selected. On Mac, this option is only present from selecting a chrome tab, so any audio you want to visualize will need to come from that tab.")) {
-      let speaker = new MediaStream;
-      const mediaDevices = navigator.mediaDevices as any;
-      mediaDevices.getDisplayMedia({
-          video: true ,
-          audio: true
-      }).then((stream: MediaStream) => {
-          this.fetchPresets().then(this.randomPreset);
-          speaker.addTrack(stream.getAudioTracks()[0].clone());
-          // stopping and removing the video track to enhance the performance
-          stream.getVideoTracks()[0].stop();
-          stream.removeTrack(stream.getVideoTracks()[0]);
-          this.handleAudio(speaker);
-      }).catch(() => {
-          console.error('failed')
-      });
-    } else {
-      navigator.mediaDevices.getUserMedia({audio: true })
-      .then(this.handleAudio)
-      .catch(this.audioError);
-      this.fetchPresets().then(this.randomPreset);
-    }
   }
 
   componentWillUnmount(){
@@ -1148,6 +1126,33 @@ export default class App extends React.Component<any, any> {
       clearInterval(this.state.currentInterval);
     }
     this.setState({currentInterval: setInterval(this.randomPreset, cycleTime)});
+  }
+
+  setSpeakerAsSource = () => {
+    let speaker = new MediaStream;
+    const mediaDevices = navigator.mediaDevices as any;
+    mediaDevices.getDisplayMedia({
+        video: true ,
+        audio: true
+    }).then((stream: MediaStream) => {
+        this.fetchPresets().then(this.randomPreset);
+        speaker.addTrack(stream.getAudioTracks()[0].clone());
+        // stopping and removing the video track to enhance the performance
+        stream.getVideoTracks()[0].stop();
+        stream.removeTrack(stream.getVideoTracks()[0]);
+        this.handleAudio(speaker);
+    }).catch(() => {
+        console.error('failed')
+    });
+    this.setState({showHelp: false})
+  }
+
+  setMicrophoneAsSource = () => {
+    navigator.mediaDevices.getUserMedia({audio: true })
+    .then(this.handleAudio)
+    .catch(this.audioError);
+    this.fetchPresets().then(this.randomPreset);
+    this.setState({showHelp: false})
   }
 
   fetchPresets(){
@@ -1711,7 +1716,9 @@ export default class App extends React.Component<any, any> {
           <div id="alert-text"></div>
           <HelpDialog
             open={this.state.showHelp}
-            close={() => this.setState({showHelp: false})}  />
+            close={() => this.setState({showHelp: false})}
+            setMicAsInput={this.setMicrophoneAsSource}
+            setSpeakerAsInput={this.setSpeakerAsSource}   />
         </div>
         <Canvas onKeyDown={this.onKeyPressed} className={'App'}>
           <ambientLight intensity={0.5} />
