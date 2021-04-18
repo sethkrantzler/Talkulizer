@@ -41,6 +41,10 @@ const shortcuts = [
         key: "H",
         text: "Random Background"
     },
+    {
+        key: "U",
+        text: "Toggle UI"
+    },
 ];  
 
 export default function HelpDialog(props: any) {

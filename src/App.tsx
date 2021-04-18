@@ -1029,7 +1029,8 @@ export default class App extends React.Component<any, any> {
       cycleTime: 2000,
       currentInterval: null,
       color: "#040d1b",
-      showHelp: true
+      showHelp: true,
+      showUi: true
     };
     this.dbUrl = "http://localhost:3001/presets";
     this.isLocalHost  = Boolean(
@@ -1109,6 +1110,10 @@ export default class App extends React.Component<any, any> {
         }
         this.setCycleInterval(this.state.cycleTime);
         this.showAlertText(`Cycle (${this.state.cycleTime / 1000}s)`);
+        break;
+      case "u":
+        this.toggleUi();
+        this.showAlertText(this.state.showUi ? `Toggle UI (On)` : "Toggle UI (Off)");
         break;
       default:
         break;
@@ -1488,6 +1493,13 @@ export default class App extends React.Component<any, any> {
     this.setState({color: colorString});
   }
 
+  toggleUi = () => {
+    this.setState({showUi: !this.state.showUi});
+    document.getElementById("uiContainer").style.height = this.state.showUi ? "auto" : "0";
+    document.getElementById("uiContainer").style.opacity = this.state.showUi ? "1" : "0";
+
+  }
+
   visualizerChanged = (e: any) => {
     this.setState({visualizerType: e.target.value});
   }
@@ -1718,7 +1730,8 @@ export default class App extends React.Component<any, any> {
             open={this.state.showHelp}
             close={() => this.setState({showHelp: false})}
             setMicAsInput={this.setMicrophoneAsSource}
-            setSpeakerAsInput={this.setSpeakerAsSource}   />
+            setSpeakerAsInput={this.setSpeakerAsSource}   
+          />
         </div>
         <Canvas onKeyDown={this.onKeyPressed} className={'App'}>
           <ambientLight intensity={0.5} />
