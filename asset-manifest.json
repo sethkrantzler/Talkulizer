@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/Talkulizer/static/css/main.0f797502.chunk.css",
-    "main.js": "/Talkulizer/static/js/main.e6205660.chunk.js",
-    "main.js.map": "/Talkulizer/static/js/main.e6205660.chunk.js.map",
+    "main.css": "/Talkulizer/static/css/main.5923fd53.chunk.css",
+    "main.js": "/Talkulizer/static/js/main.df9667d0.chunk.js",
+    "main.js.map": "/Talkulizer/static/js/main.df9667d0.chunk.js.map",
     "runtime-main.js": "/Talkulizer/static/js/runtime-main.2b19ec5c.js",
     "runtime-main.js.map": "/Talkulizer/static/js/runtime-main.2b19ec5c.js.map",
-    "static/js/2.06247b20.chunk.js": "/Talkulizer/static/js/2.06247b20.chunk.js",
-    "static/js/2.06247b20.chunk.js.map": "/Talkulizer/static/js/2.06247b20.chunk.js.map",
+    "static/js/2.ade7f8f7.chunk.js": "/Talkulizer/static/js/2.ade7f8f7.chunk.js",
+    "static/js/2.ade7f8f7.chunk.js.map": "/Talkulizer/static/js/2.ade7f8f7.chunk.js.map",
     "static/js/3.ca66a2fd.chunk.js": "/Talkulizer/static/js/3.ca66a2fd.chunk.js",
     "static/js/3.ca66a2fd.chunk.js.map": "/Talkulizer/static/js/3.ca66a2fd.chunk.js.map",
     "index.html": "/Talkulizer/index.html",
-    "static/css/main.0f797502.chunk.css.map": "/Talkulizer/static/css/main.0f797502.chunk.css.map",
-    "static/js/2.06247b20.chunk.js.LICENSE.txt": "/Talkulizer/static/js/2.06247b20.chunk.js.LICENSE.txt"
+    "static/css/main.5923fd53.chunk.css.map": "/Talkulizer/static/css/main.5923fd53.chunk.css.map",
+    "static/js/2.ade7f8f7.chunk.js.LICENSE.txt": "/Talkulizer/static/js/2.ade7f8f7.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.2b19ec5c.js",
-    "static/js/2.06247b20.chunk.js",
-    "static/css/main.0f797502.chunk.css",
-    "static/js/main.e6205660.chunk.js"
+    "static/js/2.ade7f8f7.chunk.js",
+    "static/css/main.5923fd53.chunk.css",
+    "static/js/main.df9667d0.chunk.js"
   ]
 }
