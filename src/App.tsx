@@ -31,7 +31,8 @@ interface Preset {
   spread: number,
   offset: number,
   param1: number,
-  param2: number
+  param2: number,
+  bgColor: string
 }
 
 function StandardBox(props: any) {
@@ -1028,7 +1029,7 @@ export default class App extends React.Component<any, any> {
       shouldCycle: false,
       cycleTime: 2000,
       currentInterval: null,
-      color: "#040d1b",
+      bgColor: "#040d1b",
       showHelp: true,
       showUi: true
     };
@@ -1490,7 +1491,7 @@ export default class App extends React.Component<any, any> {
   backgroundChanged = (color: any) => {
     const colorString = color.css?.backgroundColor || color;
     document.getElementById("root").style.backgroundColor = colorString;
-    this.setState({color: colorString});
+    this.setState({bgColor: colorString});
   }
 
   toggleUi = () => {
@@ -1536,7 +1537,8 @@ export default class App extends React.Component<any, any> {
       spread: this.state.spread,
       offset: this.state.offset,
       param1: this.state.param1,
-      param2: this.state.param2
+      param2: this.state.param2,
+      bgColor: this.state.bgColor
     }
     axios.post(this.dbUrl, state).then(()=> {
       this.fetchPresets();
@@ -1558,6 +1560,7 @@ export default class App extends React.Component<any, any> {
       param2: selectedPreset.param2,
       selectedPreset: e.target.value
     });
+    this.backgroundChanged(!!selectedPreset.bgColor ? selectedPreset.bgColor : this.state.bgColor);
   }
 
   randomCycle = () => {
@@ -1608,8 +1611,8 @@ export default class App extends React.Component<any, any> {
                 Background
               </InputLabel>
               <ColorPicker
-                defaultValue={this.state.color}
-                value={this.state.color}
+                defaultValue={this.state.bgColor}
+                value={this.state.bgColor}
                 onChange={this.backgroundChanged}
               />
             </FormControl>
