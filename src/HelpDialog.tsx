@@ -4,12 +4,42 @@ import { makeStyles } from '@material-ui/core/styles';
 import { blue } from '@material-ui/core/colors';
 import { Dialog, DialogTitle, List, ListItem, ListItemAvatar, Avatar, ListItemText, DialogContentText, Button } from '@material-ui/core';
 
-const useStyles = makeStyles({
-    avatar: {
-        backgroundColor: blue[100],
-        color: blue[600],
+const useStyles = makeStyles(theme => ({
+    title: {
+        textAlign: 'center',
+        '& h2': {
+            fontSize: '2.25em'
+        }
     },
-});
+    containsText: {
+        color: 'black',
+        padding: '10px',
+    },
+    seperator: {
+        border: "1px solid black",
+        borderRadius: '75px',
+        width: '80%'
+    },
+    shortcutItem:{
+        paddingLeft: '20%',
+    },
+    shortcutHeaders:{
+        paddingLeft: '20%',
+        '& span': {
+            fontWeight: 'bold'
+        }
+    },
+    inputButton: {
+        backgroundColor: blue[100],
+        color: 'black',
+        width: '33%',
+        margin: '20px'
+    },
+    buttonContainer: {
+        display: 'flex',
+        justifyContent: 'center'
+    }
+}));
 
 
 const shortcuts = [
@@ -51,21 +81,27 @@ export default function HelpDialog(props: any) {
     const classes = useStyles();
     const { close, open, setSpeakerAsInput, setMicAsInput } = props;
 
-    const welcomeText = "Before we can start, you'll need to decide whether you want to use your copmuter's microphone or your speakers as the visualizer's input. (NOTE: If you select 'Speakers', a menu will pop up asking you to select your source. If on Windows, select any screen, and make sure the 'Share Audio' button in the bottom left is selected. On Mac, this option is only present from selecting a chrome tab, so any audio you want to visualize will need to come from that tab.)";
+    const welcomeText = "Before we can start, you'll need to decide whether you want to use your computer's microphone or your speakers as the visualizer's input. (NOTE: If you select 'Speakers', a menu will pop up asking you to select your source. If on Windows, select any screen, and make sure the 'Share Audio' button in the bottom left is selected. On Mac, this option is only present from selecting a chrome tab, so any audio you want to visualize will need to come from that tab.)";
 
-    const shortcutText = "I made this audio visualizer to be fully customizable, there's over 20 different visualiztion types, with multiple parameters to change each one. I've provided over 75 presets from my testing that look cool, but play around and find what you think looks cool! Here are some handy commands that I've made to help make using the visualizer easier.";
+    const shortcutText = "I made this audio visualizer to be fully customizable, there's over 20 different visualiztion types, with multiple parameters to change each one. I've provided over 75 presets from my testing that look cool, but play around and find what you think looks cool! Here are some handy shortcuts that I've made to help make using the visualizer easier.";
 
     return (
-        <Dialog onClose={close} aria-labelledby="simple-dialog-title" open={open}>
-            <DialogTitle id="simple-dialog-title">Welcome to the Talkulizer!</DialogTitle>
-            <DialogContentText id="simple-dialog-title">{welcomeText}</DialogContentText>
-            <Button onClick={setSpeakerAsInput}>Speakers</Button>
-            <Button onClick={setMicAsInput}>Mic</Button>
-            <hr></hr>
-            <DialogContentText id="simple-dialog-title">{shortcutText}</DialogContentText>
+        <Dialog onClose={close} open={open}>
+            <DialogTitle className={classes.title}>Welcome to the Talkulizer!</DialogTitle>
+            <DialogContentText className={classes.containsText}>{welcomeText}</DialogContentText>
+            <div className={classes.buttonContainer}>
+                <Button className={classes.inputButton} onClick={setSpeakerAsInput}>Speakers</Button>
+                <Button className={classes.inputButton} onClick={setMicAsInput}>Mic</Button>
+            </div>
+            <hr className={classes.seperator}></hr>
+            <DialogContentText className={classes.containsText}>{shortcutText}</DialogContentText>
             <List>
+                <ListItem className={classes.shortcutHeaders} key={"headers"}>
+                    <ListItemText primary={"Key"} />
+                    <ListItemText primary={"Description"} />
+                </ListItem>
                 {shortcuts.map((shortcut) => (
-                <ListItem key={shortcut.key}>
+                <ListItem className={classes.shortcutItem} key={shortcut.key}>
                     <ListItemText primary={shortcut.key} />
                     <ListItemText primary={shortcut.text} />
                 </ListItem>
