@@ -1035,6 +1035,28 @@
       "param2": 0,
       "bgColor": "#000",
       "id": 102
+    },
+    {
+      "presetName": "Podiums",
+      "visualizerType": "standard",
+      "colorIndex": 0,
+      "spread": 14.5,
+      "offset": 10.7,
+      "param1": 8,
+      "param2": 3,
+      "bgColor": "#040d1b",
+      "id": 103
+    },
+    {
+      "presetName": "Barwave",
+      "visualizerType": "standard",
+      "colorIndex": 0,
+      "spread": 16.5,
+      "offset": 7.8,
+      "param1": 36,
+      "param2": 3,
+      "bgColor": "#F1BCCE",
+      "id": 104
     }
   ]
 }
