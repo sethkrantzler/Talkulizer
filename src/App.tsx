@@ -880,13 +880,13 @@ export default class App extends React.Component<any, any> {
   private sliderLabels: Record<string, SliderOptions> = {
     'standard': {
       param1: 'Bars',
-      param2: '',
+      param2: 'Y Position',
       offset: 'Spread',
       spread: 'Height',
     },
     'waveform': {
       param1: 'Lines',
-      param2: 'z',
+      param2: 'Z Position',
       offset: 'Height',
       spread: '',
     },
@@ -1221,14 +1221,14 @@ export default class App extends React.Component<any, any> {
     return "#" + Math.random().toString(16).slice(2, 8);
   }
 
-  standard(height: number, spread: number, bins: number, width: number) {
+  standard(height: number, spread: number, bins: number, posY: number) {
     const maxX = 18;
     let binWidth = Math.floor(1024/bins);
     let boxes = [];
     for (let i=0; i<bins; i++){
       let boxWidth = ((maxX*2.0)/bins) - spread;
       let x = - (maxX+(maxX/bins)) + (2*maxX/bins)*(i+1);
-      boxes.push(<StandardBox analyzer={this.state.analyzer} width={boxWidth} height={height} position={[x,0.5,-10]} color={this.getColor(i, bins)} freqRange={{start: binWidth*i, end: binWidth*i+binWidth-1}} />)
+      boxes.push(<StandardBox analyzer={this.state.analyzer} width={boxWidth} height={height} position={[x,-posY*2,-10]} color={this.getColor(i, bins)} freqRange={{start: binWidth*i, end: binWidth*i+binWidth-1}} />)
     }
     return (
       <>
