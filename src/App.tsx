@@ -1604,7 +1604,7 @@ export default class App extends React.Component<any, any> {
         <div id="uiContainer">
           <div id="selectContainer">
             <Button onClick={this.helpClicked} variant="contained">
-              ?
+              Options
             </Button>
             <FormControl id="colorPicker">
               <InputLabel className='label MuiFormLabel-root MuiInputLabel-root label MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled' id="colorPickerLabel">
