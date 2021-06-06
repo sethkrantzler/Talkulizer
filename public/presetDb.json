@@ -1057,6 +1057,17 @@
       "param2": 3,
       "bgColor": "#F1BCCE",
       "id": 104
+    },
+    {
+      "presetName": "Shine",
+      "visualizerType": "circular",
+      "colorIndex": 3,
+      "spread": 1,
+      "offset": 1.3,
+      "param1": 6,
+      "param2": 0.1,
+      "bgColor": "#35C2E1",
+      "id": 105
     }
   ]
 }
