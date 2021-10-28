@@ -1,15 +1,16 @@
-import ReactDOM from 'react-dom';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, useResource, useThree, useUpdate } from 'react-three-fiber';
-import { BufferGeometry, CircleBufferGeometry, CircleGeometry, Color, EdgesGeometry, Geometry, LineBasicMaterial, Mesh, Points, Scene, Vector2, DoubleSide, CubicBezierCurve3, Vector3, QuadraticBezierCurve3} from 'three';
+import React, { useEffect, useRef, useState } from 'react';
+import { Canvas, extend, useFrame, useThree, useUpdate } from 'react-three-fiber';
+import { BufferGeometry, Vector2, DoubleSide, Vector3, QuadraticBezierCurve3 } from 'three';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import './App.css';
-import { Input, MenuItem, Select, TextField, Slider, Button, InputLabel, FormControl, Dialog } from '@material-ui/core';
+import { MenuItem, Select, TextField, Slider, Button, InputLabel, FormControl } from '@material-ui/core';
 import { ColorPalettes } from './ColorPalette';
 import axios from 'axios';
 import { calculateVectorBetweenVectors, vectorToAngle } from './MathUtils';
-import { Dictionary } from 'ts-json-db/dist/src';
 import { ColorPicker } from 'material-ui-color';
 import HelpDialog from './HelpDialog';
+extend({ OrbitControls });
+
 
 interface FrequencyRange {
   start: number;
@@ -34,6 +35,36 @@ interface Preset {
   param2: number,
   bgColor: string
 }
+
+const CameraControls = () => {
+  const {
+    camera,
+    gl: { domElement },
+  } = useThree();
+  // Ref to the controls, so that we can update them on every frame using useFrame
+  const controls = useRef();
+  // @ts-ignore
+  useFrame((state) => controls.current.update());
+
+  const [enableAutoRotate, setEnableAutoRotate] = useState(false);
+  
+  useEffect(() => {
+    // @ts-ignore
+    window.addEventListener('keydown', (e) => { 
+      if (e.key == ".") {
+        // @ts-ignore
+        controls.current?.reset()
+      }
+      if (e.key == ",") {
+        setEnableAutoRotate(enableAutoRotate => !enableAutoRotate);
+      }
+    });
+  }, [controls])
+  
+  // @ts-ignore
+  return <orbitControls ref={controls} args={[camera, domElement]} autoRotate={enableAutoRotate} />;
+};
+
 
 function StandardBox(props: any) {
   const geoRef = useRef<any>(null);
@@ -1298,36 +1329,34 @@ export default class App extends React.Component<any, any> {
     )
   }
 
-  bolt() {
+  bolt(scaleRate: number = 0.01) {
     const numCircles = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numCircles;
-    const scaleRate=0.01;
     return (
       <>
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Bolt analyzer={this.state.analyzer} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
+        <Bolt analyzer={this.state.analyzer} position={[0, 0, 0]} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Bolt analyzer={this.state.analyzer} position={[0, 0, 1]} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Bolt analyzer={this.state.analyzer} position={[0, 0, 2]} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Bolt analyzer={this.state.analyzer} position={[0, 0, 3]} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Bolt analyzer={this.state.analyzer} position={[0, 0, 4]} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Bolt analyzer={this.state.analyzer} position={[0, 0, 5]} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
       </>
     )
   }
 
-  circular(n: number, ringWidth: number) {
+  circular(n: number, ringWidth: number, scaleRate: number = 0.01) {
     const numCircles = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numCircles;
-    const scaleRate=0.01;
     return (
       <>
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Circle analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
+        <Circle analyzer={this.state.analyzer} position={[0, 0, 0]} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Circle analyzer={this.state.analyzer} position={[0, 0, 1]} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Circle analyzer={this.state.analyzer} position={[0, 0, 2]} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Circle analyzer={this.state.analyzer} position={[0, 0, 3]} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Circle analyzer={this.state.analyzer} position={[0, 0, 4]} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Circle analyzer={this.state.analyzer} position={[0, 0, 5]} n={n} ringWidth={ringWidth} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
       </>
     )
   }
@@ -1366,19 +1395,18 @@ export default class App extends React.Component<any, any> {
     )
   }
 
-  rings(ringSize: number, indexStart: number, n: number, ringWidth: number) {
+  rings(ringSize: number, indexStart: number, n: number, ringWidth: number, scaleRate: number = 0.01) {
     const numRings = 6;
     const maxRadius = 10;
     const radiusScale=maxRadius/numRings;
-    const scaleRate=0.01;
     return (
       <>
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
-        <Ring analyzer={this.state.analyzer} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
+        <Ring analyzer={this.state.analyzer} position={[0, 0, 0]} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={5*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[0]} freqRange={{start: 0, end:  2}} />
+        <Ring analyzer={this.state.analyzer} position={[0, 0, 1]} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={4*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[1]} freqRange={{start: 4,  end:  10}} />
+        <Ring analyzer={this.state.analyzer} position={[0, 0, 2]} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={3*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[2]} freqRange={{start: 13, end:  22}} />
+        <Ring analyzer={this.state.analyzer} position={[0, 0, 3]} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={2*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[3]} freqRange={{start: 40, end:  88}} />
+        <Ring analyzer={this.state.analyzer} position={[0, 0, 4]} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={1*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[4]} freqRange={{start: 100, end:  256}} />
+        <Ring analyzer={this.state.analyzer} position={[0, 0, 5]} n={n} ringWidth={ringWidth} indexStart={indexStart} scaleRate={scaleRate} radius={0*radiusScale+scaleRate} ringSize={ringSize} color={ColorPalettes[this.state.colorIndex].palette_6[5]} freqRange={{start: 280, end:  500}} />
       </>
     )
   }
@@ -1435,16 +1463,16 @@ export default class App extends React.Component<any, any> {
         return this.verticalLines(spread, offset);
       }
       case "circular": { 
-        return this.circular(param1, param2);
+        return this.circular(param1, param2, 0);
       }
       case "bolt": { 
-        return this.bolt();
+        return this.bolt(0);
       } 
       case "rings": { 
-        return this.rings(0.02, 1, param1, param2);
+        return this.rings(0.02, 1, param1, param2, 0);
       } 
       case "fractal": { 
-        return this.rings(0.02, 0, param1, param2);
+        return this.rings(0.02, 0, param1, param2, 0);
       } 
       case "solid": { 
         return this.solidColor();
@@ -1736,6 +1764,7 @@ export default class App extends React.Component<any, any> {
           />
         </div>
         <Canvas onKeyDown={this.onKeyPressed} className={'App'}>
+          <CameraControls />
           <ambientLight intensity={0.5} />
           {this.renderVisualizer(this.state.visualizerType, this.state.spread, this.state.offset, this.state.param1, this.state.param2)}
         </Canvas>
