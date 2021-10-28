@@ -21,10 +21,13 @@ const useStyles = makeStyles(theme => ({
         width: '80%'
     },
     shortcutItem:{
-        paddingLeft: '20%',
+        paddingLeft: '5%',
+    },
+    shortcutKey:{
+        maxWidth: '150px'
     },
     shortcutHeaders:{
-        paddingLeft: '20%',
+        paddingLeft: '5%',
         '& span': {
             fontWeight: 'bold'
         }
@@ -60,6 +63,18 @@ const shortcuts = [
         text: "Decrease cycle period"
     },
     {
+        key: "Left Mouse",
+        text: "Rotate Camera"
+    },
+    {
+        key: "Middle Mouse",
+        text: "Zoom"
+    },
+    {
+        key: "Right Mouse",
+        text: "Pan Camera"
+    },
+    {
         key: "G",
         text: "Green Screen Background"
     },
@@ -75,6 +90,14 @@ const shortcuts = [
         key: "U",
         text: "Toggle UI"
     },
+    {
+        key: ".",
+        text: "Reset Camera"
+    },
+    {
+        key: ",",
+        text: "Enable Camera Autorotate"
+    }
 ];  
 
 export default function HelpDialog(props: any) {
@@ -97,12 +120,12 @@ export default function HelpDialog(props: any) {
             <DialogContentText className={classes.containsText}>{shortcutText}</DialogContentText>
             <List>
                 <ListItem className={classes.shortcutHeaders} key={"headers"}>
-                    <ListItemText primary={"Key"} />
+                    <ListItemText className={classes.shortcutKey} primary={"Key"} />
                     <ListItemText primary={"Description"} />
                 </ListItem>
                 {shortcuts.map((shortcut) => (
                 <ListItem className={classes.shortcutItem} key={shortcut.key}>
-                    <ListItemText primary={shortcut.key} />
+                    <ListItemText className={classes.shortcutKey} primary={shortcut.key} />
                     <ListItemText primary={shortcut.text} />
                 </ListItem>
                 ))}
