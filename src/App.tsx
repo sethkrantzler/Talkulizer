@@ -1588,7 +1588,7 @@ export default class App extends React.Component<any, any> {
       param2: selectedPreset.param2,
       selectedPreset: e.target.value
     });
-    this.backgroundChanged(!!selectedPreset.bgColor ? selectedPreset.bgColor : this.state.bgColor);
+    this.backgroundChanged(this.state.bgColor !== '#00ff00' && this.state.bgColor !== '#0000ff' &&  !!selectedPreset.bgColor ? selectedPreset.bgColor : this.state.bgColor);
   }
 
   randomCycle = () => {
