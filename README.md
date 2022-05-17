@@ -11,7 +11,12 @@ HOW TO USE
 
 TO DO
 
-- customizable number of lines, etc.
+- refactor visual functions away from canvas into own files
+- overhaul UI
+- add ability to add a visual to the render function
+- custom color palettes
+- save last preset with cookies
+- text visual
 - Label things
 - hookup more params across different things
 - Icon and Title
